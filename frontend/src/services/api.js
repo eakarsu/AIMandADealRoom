@@ -151,6 +151,39 @@ export const aiAntiTrustRisk            = (b) => request('/ai/anti-trust-risk', 
 export const aiEscrowCalculator         = (b) => request('/ai/escrow-calculator',         { method: 'POST', body: JSON.stringify(b || {}) });
 export const aiPostCloseNarrative       = (b) => request('/ai/post-close-narrative',      { method: 'POST', body: JSON.stringify(b || {}) });
 
+// Pass 7 — 8 new AI verbs
+export const aiDocumentClassifier       = (b) => request('/ai/document-classifier',       { method: 'POST', body: JSON.stringify(b || {}) });
+export const aiQaCopilot                = (b) => request('/ai/qa-copilot',                { method: 'POST', body: JSON.stringify(b || {}) });
+export const aiRedactionRecommender     = (b) => request('/ai/redaction-recommender',     { method: 'POST', body: JSON.stringify(b || {}) });
+export const aiDealSummaryGenerator     = (b) => request('/ai/deal-summary-generator',    { method: 'POST', body: JSON.stringify(b || {}) });
+export const aiRiskFlagExtractor        = (b) => request('/ai/risk-flag-extractor',       { method: 'POST', body: JSON.stringify(b || {}) });
+export const aiNdaMatcher               = (b) => request('/ai/nda-matcher',               { method: 'POST', body: JSON.stringify(b || {}) });
+export const aiDcfCopilot               = (b) => request('/ai/dcf-copilot',               { method: 'POST', body: JSON.stringify(b || {}) });
+export const aiTermSheetDiffExplainer   = (b) => request('/ai/term-sheet-diff-explainer', { method: 'POST', body: JSON.stringify(b || {}) });
+
+// Pass 7 — VDR per-doc permissions (role-based ACL)
+export const vdrPermissionsApi = {
+  list:        ()          => request('/vdr-permissions'),
+  listForDoc:  (doc_id)    => request(`/vdr-permissions/doc/${encodeURIComponent(doc_id)}`),
+  create:      (d)         => request('/vdr-permissions',           { method: 'POST', body: JSON.stringify(d) }),
+  update:      (id, d)     => request(`/vdr-permissions/${id}`,     { method: 'PUT',  body: JSON.stringify(d) }),
+  remove:      (id)        => request(`/vdr-permissions/${id}`,     { method: 'DELETE' }),
+  check:       (doc_id, role) => request('/vdr-permissions/check', {
+    method: 'POST', body: JSON.stringify({ doc_id, role }),
+  }),
+};
+
+// Pass 7 — VDR in-browser viewer + analytics + audit-log export
+export const vdrViewerApi = {
+  fetchDoc:    (doc_id)    => request(`/vdr-viewer/doc/${encodeURIComponent(doc_id)}`),
+  logView:     (doc_id, payload) => request(`/vdr-viewer/doc/${encodeURIComponent(doc_id)}/view`, {
+    method: 'POST', body: JSON.stringify(payload || {}),
+  }),
+  analytics:        ()        => request('/vdr-viewer/analytics'),
+  analyticsForDoc:  (doc_id)  => request(`/vdr-viewer/analytics/doc/${encodeURIComponent(doc_id)}`),
+  auditExportUrl:   (format = 'csv') => `${API_BASE}/vdr-viewer/audit-log/export?format=${encodeURIComponent(format)}`,
+};
+
 // AI history
 export const getAIHistory = (feature, limit = 25) => {
   const qs = new URLSearchParams({

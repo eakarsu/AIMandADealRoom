@@ -10,9 +10,12 @@ const DEALS_LINKS = [
 ];
 
 const VDR_LINKS = [
-  { to: '/vdr-documents',  label: 'VDR Documents' },
-  { to: '/q-and-a',        label: 'Q&A' },
-  { to: '/working-groups', label: 'Working Groups' },
+  { to: '/vdr-documents',   label: 'VDR Documents' },
+  { to: '/vdr-viewer',      label: 'VDR Viewer' },
+  { to: '/vdr-permissions', label: 'VDR Permissions' },
+  { to: '/vdr-analytics',   label: 'Dataroom Analytics' },
+  { to: '/q-and-a',         label: 'Q&A' },
+  { to: '/working-groups',  label: 'Working Groups' },
 ];
 
 const DILIGENCE_LINKS = [
@@ -51,17 +54,25 @@ const AI_MODELING_LINKS = [
   { to: '/ai/anti-trust-risk',          label: 'AI · Anti-Trust Risk' },
   { to: '/ai/regulatory-approval-check',label: 'AI · Regulatory Approval Check' },
   { to: '/ai/due-diligence-prioritize', label: 'AI · DD Prioritize' },
+  { to: '/ai/dcf-copilot',              label: 'AI · DCF Copilot' },
 ];
 
 const AI_DRAFTING_LINKS = [
-  { to: '/ai/qofe-memo',              label: 'AI · QofE Memo' },
-  { to: '/ai/redline-summarizer',     label: 'AI · Redline Summarizer' },
-  { to: '/ai/integration-plan-draft', label: 'AI · Integration Plan Draft' },
-  { to: '/ai/term-sheet-compare',     label: 'AI · Term Sheet Compare' },
-  { to: '/ai/closing-checklist-gen',  label: 'AI · Closing Checklist Gen' },
-  { to: '/ai/vdr-question-router',    label: 'AI · VDR Question Router' },
-  { to: '/ai/executive-brief',        label: 'AI · Executive Brief' },
-  { to: '/ai/post-close-narrative',   label: 'AI · Post-Close Narrative' },
+  { to: '/ai/qofe-memo',                 label: 'AI · QofE Memo' },
+  { to: '/ai/redline-summarizer',        label: 'AI · Redline Summarizer' },
+  { to: '/ai/integration-plan-draft',    label: 'AI · Integration Plan Draft' },
+  { to: '/ai/term-sheet-compare',        label: 'AI · Term Sheet Compare' },
+  { to: '/ai/term-sheet-diff-explainer', label: 'AI · Term Sheet Diff Explainer' },
+  { to: '/ai/closing-checklist-gen',     label: 'AI · Closing Checklist Gen' },
+  { to: '/ai/vdr-question-router',       label: 'AI · VDR Question Router' },
+  { to: '/ai/executive-brief',           label: 'AI · Executive Brief' },
+  { to: '/ai/post-close-narrative',      label: 'AI · Post-Close Narrative' },
+  { to: '/ai/deal-summary-generator',    label: 'AI · Deal Summary Generator' },
+  { to: '/ai/document-classifier',       label: 'AI · Document Classifier' },
+  { to: '/ai/qa-copilot',                label: 'AI · Q&A Copilot' },
+  { to: '/ai/redaction-recommender',     label: 'AI · Redaction Recommender' },
+  { to: '/ai/risk-flag-extractor',       label: 'AI · Risk Flag Extractor' },
+  { to: '/ai/nda-matcher',               label: 'AI · NDA Matcher' },
 ];
 
 export default function Sidebar() {

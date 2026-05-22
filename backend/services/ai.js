@@ -450,6 +450,152 @@ async function postCloseNarrative(deal, kpis = []) {
   return safeJsonParse(r, { summary: typeof r === 'string' ? r : 'No response', kpi_performance: [] });
 }
 
+// ──────────────────────────────────────────────────────────────
+// Pass-7 AI verbs — backlog implementation
+// ──────────────────────────────────────────────────────────────
+
+// AI Verb 17: Document Classifier — auto-tag a VDR doc
+async function documentClassifier(doc, context = {}) {
+  const sys = `${SYSTEM_PROMPT} Classify a VDR document. Return strict JSON:
+{
+  "doc": object,
+  "primary_category": string,
+  "secondary_categories": [string],
+  "sensitivity": "public"|"confidential"|"highly_confidential"|"privileged",
+  "suggested_workstream": string,
+  "suggested_tags": [string],
+  "confidence_pct": number,
+  "rationale": string,
+  "summary": string
+}`;
+  const usr = `Doc:\n${JSON.stringify(doc, null, 2)}\nContext: ${JSON.stringify(context)}`;
+  const r = await callOpenRouter(sys, usr);
+  return safeJsonParse(r, { summary: typeof r === 'string' ? r : 'No response', suggested_tags: [] });
+}
+
+// AI Verb 18: Q&A Copilot — draft answer for a VDR Q&A item
+async function qaCopilot(qa, context = {}) {
+  const sys = `${SYSTEM_PROMPT} Draft an assisted answer for a VDR diligence question. Return strict JSON:
+{
+  "question": string,
+  "draft_answer": string,
+  "supporting_docs": [{ "name": string, "category": string, "why": string }],
+  "open_followups": [string],
+  "confidence": "low"|"medium"|"high",
+  "review_required_by": string,
+  "summary": string
+}`;
+  const usr = `Q&A item:\n${JSON.stringify(qa, null, 2)}\nContext: ${JSON.stringify(context)}`;
+  const r = await callOpenRouter(sys, usr);
+  return safeJsonParse(r, { summary: typeof r === 'string' ? r : 'No response', supporting_docs: [] });
+}
+
+// AI Verb 19: Redaction Recommender — flag PII / privileged spans
+async function redactionRecommender(doc, body = '') {
+  const sys = `${SYSTEM_PROMPT} Identify PII / privileged spans for redaction. Return strict JSON:
+{
+  "doc": object,
+  "spans": [{ "span_text": string, "category": "PII"|"privileged"|"trade_secret"|"financial"|"other", "severity": "low"|"medium"|"high", "reason": string }],
+  "overall_risk": "low"|"medium"|"high",
+  "redaction_strategy": string,
+  "summary": string
+}`;
+  const usr = `Doc:\n${JSON.stringify(doc, null, 2)}\nBody (first 4k chars):\n${(body || '').slice(0, 4000)}`;
+  const r = await callOpenRouter(sys, usr);
+  return safeJsonParse(r, { summary: typeof r === 'string' ? r : 'No response', spans: [] });
+}
+
+// AI Verb 20: Deal-Summary Generator — one-pager
+async function dealSummaryGenerator(deal, linked = {}) {
+  const sys = `${SYSTEM_PROMPT} Produce a one-page deal summary. Return strict JSON:
+{
+  "deal": object,
+  "headline": string,
+  "transaction_overview": string,
+  "valuation_snapshot": { "ev_usd": number, "multiple": string, "note": string },
+  "strategic_rationale": string,
+  "key_diligence_findings": [string],
+  "key_risks": [string],
+  "next_milestones": [{ "milestone": string, "date": string }],
+  "recommendation": string,
+  "summary": string
+}`;
+  const usr = `Deal:\n${JSON.stringify(deal, null, 2)}\nLinked entities:\n${JSON.stringify(linked, null, 2)}`;
+  const r = await callOpenRouter(sys, usr);
+  return safeJsonParse(r, { summary: typeof r === 'string' ? r : 'No response', key_risks: [] });
+}
+
+// AI Verb 21: Risk-Flag Extractor — cross-doc red flags
+async function riskFlagExtractor(corpus = {}, context = {}) {
+  const sys = `${SYSTEM_PROMPT} Scan a multi-document corpus and extract cross-doc red flags. Return strict JSON:
+{
+  "flags": [{ "flag": string, "category": "legal"|"financial"|"regulatory"|"operational"|"reputational", "severity": "low"|"medium"|"high"|"critical", "supporting_docs": [string], "narrative": string }],
+  "patterns": [string],
+  "overall_risk": "low"|"medium"|"high"|"critical",
+  "recommended_actions": [string],
+  "summary": string
+}`;
+  const usr = `Corpus:\n${JSON.stringify(corpus, null, 2)}\nContext: ${JSON.stringify(context)}`;
+  const r = await callOpenRouter(sys, usr);
+  return safeJsonParse(r, { summary: typeof r === 'string' ? r : 'No response', flags: [] });
+}
+
+// AI Verb 22: NDA Matcher — clause-level NDA vs template diff
+async function ndaMatcher(nda = {}, template = {}) {
+  const sys = `${SYSTEM_PROMPT} Diff an NDA against a template at clause level. Return strict JSON:
+{
+  "nda": object,
+  "template": object,
+  "clauses": [{ "clause": string, "template_text": string, "nda_text": string, "status": "match"|"modified"|"missing"|"extra", "impact": "low"|"medium"|"high", "narrative": string }],
+  "missing_required_clauses": [string],
+  "non_standard_additions": [string],
+  "overall_alignment_pct": number,
+  "recommended_redline": string,
+  "summary": string
+}`;
+  const usr = `NDA:\n${JSON.stringify(nda, null, 2)}\nTemplate:\n${JSON.stringify(template, null, 2)}`;
+  const r = await callOpenRouter(sys, usr);
+  return safeJsonParse(r, { summary: typeof r === 'string' ? r : 'No response', clauses: [] });
+}
+
+// AI Verb 23: DCF Copilot — guided DCF build + sensitivity
+async function dcfCopilot(target = {}, assumptions = {}) {
+  const sys = `${SYSTEM_PROMPT} Build a guided DCF with sensitivity. Return strict JSON:
+{
+  "target": object,
+  "assumptions": object,
+  "projection_years": number,
+  "free_cash_flows_usd": [number],
+  "terminal_value_usd": number,
+  "wacc_pct": number,
+  "enterprise_value_usd": number,
+  "equity_value_usd": number,
+  "per_share_value_usd": number,
+  "sensitivity_matrix": [{ "wacc_pct": number, "exit_multiple": number, "ev_usd": number }],
+  "key_drivers": [string],
+  "summary": string
+}`;
+  const usr = `Target:\n${JSON.stringify(target, null, 2)}\nAssumptions:\n${JSON.stringify(assumptions, null, 2)}`;
+  const r = await callOpenRouter(sys, usr);
+  return safeJsonParse(r, { summary: typeof r === 'string' ? r : 'No response', sensitivity_matrix: [] });
+}
+
+// AI Verb 24: Term-Sheet Diff Explainer — natural-language redline narration
+async function termSheetDiffExplainer(diff = {}, context = {}) {
+  const sys = `${SYSTEM_PROMPT} Narrate a term-sheet redline in natural language. Return strict JSON:
+{
+  "diff": object,
+  "narration": string,
+  "changes_by_section": [{ "section": string, "before": string, "after": string, "explanation": string, "deal_impact": "favorable"|"adverse"|"neutral", "magnitude": "minor"|"moderate"|"material" }],
+  "key_takeaways": [string],
+  "recommended_response": string,
+  "summary": string
+}`;
+  const usr = `Diff:\n${JSON.stringify(diff, null, 2)}\nContext: ${JSON.stringify(context)}`;
+  const r = await callOpenRouter(sys, usr);
+  return safeJsonParse(r, { summary: typeof r === 'string' ? r : 'No response', changes_by_section: [] });
+}
+
 module.exports = {
   callOpenRouter,
   safeJsonParse,
@@ -469,4 +615,13 @@ module.exports = {
   antiTrustRisk,
   escrowCalculator,
   postCloseNarrative,
+  // Pass 7
+  documentClassifier,
+  qaCopilot,
+  redactionRecommender,
+  dealSummaryGenerator,
+  riskFlagExtractor,
+  ndaMatcher,
+  dcfCopilot,
+  termSheetDiffExplainer,
 };

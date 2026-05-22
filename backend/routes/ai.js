@@ -564,6 +564,321 @@ const SAMPLES = {
     },
   ],
 
+  // ── Pass 7: new AI verbs ──
+  'document-classifier': [
+    {
+      label: 'Sterling Aerospace — supplier contract',
+      values: {
+        name: 'Long-term supplier agreement — Sterling Aerospace v3.docx',
+        body_snippet: 'Master Supplier Agreement between Sterling Aerospace Parts and Boeing Defense effective FY2026. Pricing schedule, exclusivity, indemnity terms covering 240 SKUs.',
+        deal_context: 'Sterling Aerospace acquisition by TransDigm; commercial DD focus.',
+      },
+    },
+    {
+      label: 'Helios Therapeutics — patent assignment',
+      values: {
+        name: 'Patent assignment — Helios-001 composition of matter.pdf',
+        body_snippet: 'Assignment of US Patent 11,234,567 covering Helios-001 active compound from MIT TLO to Helios Therapeutics Inc, dated 2022-03-14.',
+        deal_context: 'Helios acquisition; IP DD workstream.',
+      },
+    },
+    {
+      label: 'Crescent Bank — OCC consent order',
+      values: {
+        name: 'OCC Consent Order 2024-Q2 — Crescent Capital Bank.pdf',
+        body_snippet: 'Office of the Comptroller consent order requiring Crescent Capital Bank to remediate AML/BSA program deficiencies within 18 months.',
+        deal_context: 'KKR acquisition of Crescent Bank; regulatory DD.',
+      },
+    },
+    {
+      label: 'Quantum Edge — customer contract redline',
+      values: {
+        name: 'MSA redline — Quantum Edge vs Fortune-50 customer.docx',
+        body_snippet: 'Redlined Master Subscription Agreement with auto-renewal clause, MFN pricing clause, and SLA credit schedule revisions.',
+        deal_context: 'Vista acquisition of Quantum Edge; customer DD.',
+      },
+    },
+    {
+      label: 'Atlas Renewable — PPA',
+      values: {
+        name: 'Power Purchase Agreement — Iberdrola offtake.pdf',
+        body_snippet: '20-year PPA between Atlas Renewable and Iberdrola at €58/MWh blended, change-of-control consent required by offtaker.',
+        deal_context: 'Brookfield acquisition of Atlas Renewable; commercial DD.',
+      },
+    },
+  ],
+
+  'qa-copilot': [
+    {
+      label: 'Customer concentration draft',
+      values: {
+        question: 'Provide top-10 customer concentration as a % of FY2025 revenue with breakdown by product line.',
+        existing_partial_answer: 'Top-10 = 41% of revenue.',
+        vdr_notes: 'Northwind Logistics — top-10 customer table available in financial DD workpapers.',
+      },
+    },
+    {
+      label: 'Cyber posture draft',
+      values: {
+        question: 'Provide SOC2 Type II report and last 24 months of penetration test summaries.',
+        existing_partial_answer: '',
+        vdr_notes: 'Nimbus Cloud — SOC2 uploaded; Mandiant pen tests Q3 2024 and Q1 2025.',
+      },
+    },
+    {
+      label: 'OCC consent order remediation',
+      values: {
+        question: 'Provide the current remediation status and remaining tasks under the OCC consent order.',
+        existing_partial_answer: 'Remediation ~60% complete.',
+        vdr_notes: 'Crescent Bank — OCC remediation workstream led by S&C.',
+      },
+    },
+    {
+      label: 'Clinical Phase III enrollment',
+      values: {
+        question: 'Provide updated Helios-001 Phase III enrollment status and projected BLA submission date.',
+        existing_partial_answer: 'Enrollment ~14% behind plan.',
+        vdr_notes: 'Helios — IQVIA clinical DD.',
+      },
+    },
+    {
+      label: 'CFIUS scope question',
+      values: {
+        question: 'Identify any CFIUS-covered contracts or personnel exposure relevant to the buyer.',
+        existing_partial_answer: '',
+        vdr_notes: 'Sterling Aerospace — DoD covered contracts; export-controlled engineering staff.',
+      },
+    },
+  ],
+
+  'redaction-recommender': [
+    {
+      label: 'Employment file — Sterling',
+      values: {
+        doc_name: 'Sterling Aerospace — top-5 exec compensation memo.pdf',
+        body: 'CFO Jane Doe (SSN 123-45-6789) — base $510k, target bonus $410k, LTI $1.2M. Address 1455 Maple Ave, Cleveland OH.',
+      },
+    },
+    {
+      label: 'Privileged legal opinion',
+      values: {
+        doc_name: 'Privileged & Confidential — Wachtell antitrust analysis.pdf',
+        body: 'Privileged attorney work product analyzing HHI overlap and litigation risk in Atlanta MSA — prepared at direction of GC.',
+      },
+    },
+    {
+      label: 'Customer pricing list',
+      values: {
+        doc_name: 'Quantum Edge — top-10 customer pricing schedule.xlsx',
+        body: 'Customer A: $4.8M ARR @ MFN tier; Customer B: $3.2M ARR; pricing tables include unit economics and discount tiers.',
+      },
+    },
+    {
+      label: 'Personal medical/clinical file',
+      values: {
+        doc_name: 'Helios-001 — investigator-reported AE log.pdf',
+        body: 'Subject 042 (DOB 1971-05-12, MRN 88231) reported Grade-2 adverse event; PI contact: dr.ramirez@helios.com.',
+      },
+    },
+    {
+      label: 'Trade secret formulation',
+      values: {
+        doc_name: 'Polaris EV — motor stator winding spec.docx',
+        body: 'Proprietary stator winding pattern Rev-7 with 0.32mm copper, 124 turns/slot, lamination geometry confidential to engineering.',
+      },
+    },
+  ],
+
+  'deal-summary-generator': [
+    {
+      label: 'Sterling Aerospace one-pager',
+      values: {
+        deal_summary: 'TransDigm acquires Sterling Aerospace Parts ($980M EV). Strategic roll-up of proprietary aero components with aftermarket attach.',
+        linked_notes: 'QofE adjusted EBITDA $84M; HSR + CFIUS workstreams open; signing target May 2026.',
+      },
+    },
+    {
+      label: 'Atlas Renewable one-pager',
+      values: {
+        deal_summary: 'Brookfield Renewable acquires Atlas Renewable Power ($2.2B EV). 1.4 GW Spanish solar + storage platform.',
+        linked_notes: 'EU + CNMC merger control; PPA 12-yr blended €58/MWh; merchant exposure 18%.',
+      },
+    },
+    {
+      label: 'Quantum Edge one-pager',
+      values: {
+        deal_summary: 'Vista Equity acquires Quantum Edge Analytics ($1.25B EV, $310M ARR). SaaS platform tuck-in.',
+        linked_notes: 'Rule-of-50; NDR 122%; 12-mo G&A optimization plan per Vista playbook.',
+      },
+    },
+    {
+      label: 'Crescent Bank one-pager',
+      values: {
+        deal_summary: 'KKR acquires Crescent Capital Bank ($3.4B EV). PE acquisition of regional bank.',
+        linked_notes: 'Fed CIC + OCC + state regulators; OCC consent order ongoing; long regulatory runway to March 2027.',
+      },
+    },
+    {
+      label: 'Polaris EV one-pager',
+      values: {
+        deal_summary: 'Toyota Tsusho acquires Polaris EV Drivetrain ($1.1B EV). Captive supplier within Toyota Group.',
+        linked_notes: 'JFTC + HSR + CFIUS; Aichi plant consolidation; engineering merge with Toyota Powertrain.',
+      },
+    },
+  ],
+
+  'risk-flag-extractor': [
+    {
+      label: 'Sterling — DoD overpricing precedent',
+      values: {
+        corpus_notes: 'Across SPA, supplier MSA, and Wachtell antitrust memo: TransDigm prior DoD settlements; Sterling single-source 240 SKUs; pricing optimization playbook documented.',
+        focus: 'Regulatory + commercial',
+      },
+    },
+    {
+      label: 'Crescent — AML/BSA + FLSA',
+      values: {
+        corpus_notes: 'OCC consent order + 3 pending FLSA class actions + HUD whistleblower claim disclosed late in DD.',
+        focus: 'Legal + regulatory',
+      },
+    },
+    {
+      label: 'Northwind — customer concentration + rebates',
+      values: {
+        corpus_notes: 'Customer rebate accruals +$22M disputed; AR aging worsening; top-10 = 41% revenue with FedEx repricing pending.',
+        focus: 'Financial + commercial',
+      },
+    },
+    {
+      label: 'Polaris EV — IP + supply chain',
+      values: {
+        corpus_notes: 'Pending Wilson Sonsini FTO with one cited unresolved competitor patent; Aichi plant supply chain delays Q3.',
+        focus: 'IP + operational',
+      },
+    },
+    {
+      label: 'Helios — clinical + milestone-dep revenue',
+      values: {
+        corpus_notes: 'Phase III enrollment 14% behind plan; $34M deferred revenue from Pfizer; SSRI study disclosure inconsistency.',
+        focus: 'Clinical + financial',
+      },
+    },
+  ],
+
+  'nda-matcher': [
+    {
+      label: 'Helios NDA vs in-house template',
+      values: {
+        nda_excerpt: 'Helios NDA — exclusivity 45 days (template: 60); standstill carved out for white-knight (template: full standstill); LD $25M cap (template: equitable relief only).',
+        template_excerpt: 'Standard Latham 2024 NDA — 60-day exclusivity, full standstill, equitable relief, 2-year survival, governing law NY.',
+      },
+    },
+    {
+      label: 'Quantum Edge NDA vs PE template',
+      values: {
+        nda_excerpt: 'Quantum Edge NDA — 24-month residuals carve-out, no non-solicit on employees over $250k base.',
+        template_excerpt: 'Vista standard NDA — full residuals prohibited, 12-month non-solicit on all employees.',
+      },
+    },
+    {
+      label: 'Crescent Bank NDA vs bank template',
+      values: {
+        nda_excerpt: 'Crescent NDA — bank regulator carve-out, customer data use restriction extends 3 years post-termination.',
+        template_excerpt: 'Standard FDIC-compliant NDA — bank regulator carve-out, customer data 5-year restriction.',
+      },
+    },
+    {
+      label: 'Northwind NDA vs strategic template',
+      values: {
+        nda_excerpt: 'Northwind NDA — no non-compete; survival 3 years; binding arbitration in London.',
+        template_excerpt: 'Maersk standard NDA — 12-month non-compete on competing logistics tenders; 5-year survival; arbitration in Copenhagen.',
+      },
+    },
+    {
+      label: 'Atlas NDA vs cross-border template',
+      values: {
+        nda_excerpt: 'Atlas NDA — exclusivity 90 days; governing law Spain; mutual confidentiality.',
+        template_excerpt: 'Brookfield cross-border NDA — 60 days exclusivity; governing law NY; mutual confidentiality with employee non-solicit.',
+      },
+    },
+  ],
+
+  'dcf-copilot': [
+    {
+      label: 'Quantum Edge DCF',
+      values: {
+        target_summary: 'Quantum Edge Analytics — $310M ARR, 28% growth, 78% gross margin, terminal margin 35%.',
+        assumptions_notes: 'Projection 5 years; WACC 11%; exit multiple 7x ARR; tax rate 22%.',
+      },
+    },
+    {
+      label: 'Sterling Aerospace DCF',
+      values: {
+        target_summary: 'Sterling Aerospace — $84M QofE-adj EBITDA, 4% revenue CAGR, 25% EBITDA margin expanding to 30% Year 5.',
+        assumptions_notes: 'Projection 5 years; WACC 9.5%; exit 11x EBITDA; tax rate 24%.',
+      },
+    },
+    {
+      label: 'Helios DCF (probability-weighted)',
+      values: {
+        target_summary: 'Helios Therapeutics — Helios-001 pNPV $1.4B at 60% PoS; pipeline value $400M risk-adjusted.',
+        assumptions_notes: 'Projection 10 years; WACC 12%; terminal growth 2%; tax rate 21%.',
+      },
+    },
+    {
+      label: 'Atlas Renewable DCF',
+      values: {
+        target_summary: 'Atlas Renewable — $220M EBITDA, contracted PPA tenor 12yr, blended €58/MWh.',
+        assumptions_notes: 'Projection 12 years; WACC 7.5% (project); leverage 60%; merchant uplift Year 13+.',
+      },
+    },
+    {
+      label: 'Northwind DCF',
+      values: {
+        target_summary: 'Northwind Logistics — $920M EV target, 4.8% rev CAGR, 14%→16.5% EBITDA margin.',
+        assumptions_notes: 'Projection 5 years; WACC 10%; exit 6.5x EBITDA; fleet capex declines Year 4.',
+      },
+    },
+  ],
+
+  'term-sheet-diff-explainer': [
+    {
+      label: 'Helios — GSK v1 → GSK v2',
+      values: {
+        diff_notes: 'GSK raised escrow from 6% to 8%; added MAC carve-out for clinical trial holds; reduced exclusivity from 60 to 45 days.',
+        context: 'Helios Therapeutics; buyer responding to FTO findings.',
+      },
+    },
+    {
+      label: 'Polaris EV — Toyota v1 → v2',
+      values: {
+        diff_notes: 'Toyota added $60M earn-out tied to 2027 EBITDA; cut cash component by $30M; extended exclusivity to 75 days.',
+        context: 'Polaris EV; buyer hedging EV ramp risk.',
+      },
+    },
+    {
+      label: 'Sterling — TransDigm v1 → v2',
+      values: {
+        diff_notes: 'TransDigm raised tax indemnity cap from $40M to $55M; extended fundamental rep survival to 6 years; added FY2026 EBITDA holdback.',
+        context: 'Sterling Aerospace; QofE findings tightening protections.',
+      },
+    },
+    {
+      label: 'Atlas — Brookfield v1 → EDF counter',
+      values: {
+        diff_notes: 'EDF counter introduced $50M merchant-power earn-out and 5% escrow vs Brookfield 3%; financing changed from cash-only to cash + project finance.',
+        context: 'Atlas Renewable competitive process; merchant-risk-sharing debate.',
+      },
+    },
+    {
+      label: 'Northwind — Maersk v1 → XPO counter',
+      values: {
+        diff_notes: 'XPO offered $880M vs Maersk $920M; added $40M earn-out tied to fleet utilization; financing condition retained.',
+        context: 'Northwind 3PL competitive process; financing certainty key.',
+      },
+    },
+  ],
+
   'post-close-narrative': [
     {
       label: 'Sterling Aerospace — Q3 2026 post-close',
@@ -851,6 +1166,104 @@ router.post('/post-close-narrative', async (req, res) => {
     const k = Array.isArray(kpis) && kpis.length > 0 ? kpis : (kpi_notes ? [{ note: kpi_notes }] : []);
     const result = await ai.postCloseNarrative(dealInput, k);
     await record('post-close-narrative', { deal: dealInput, kpis_count: k.length }, result);
+    res.json(result);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ─── Pass 7: new AI endpoints ────────────────────────────────
+
+// 17. POST /api/ai/document-classifier
+router.post('/document-classifier', async (req, res) => {
+  try {
+    const { name, body_snippet, deal_context, doc, context } = req.body || {};
+    const docInput = doc || { name: name || 'Untitled document', body_snippet: body_snippet || '' };
+    const ctx = context || { deal_context: deal_context || '' };
+    const result = await ai.documentClassifier(docInput, ctx);
+    await record('document-classifier', { doc: docInput, context: ctx }, result);
+    res.json(result);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// 18. POST /api/ai/qa-copilot
+router.post('/qa-copilot', async (req, res) => {
+  try {
+    const { question, existing_partial_answer, vdr_notes, qa, context } = req.body || {};
+    if (!question && !qa) return res.status(400).json({ error: 'question is required' });
+    const qaInput = qa || { question, partial_answer: existing_partial_answer || '' };
+    const ctx = context || { vdr_notes: vdr_notes || '' };
+    const result = await ai.qaCopilot(qaInput, ctx);
+    await record('qa-copilot', { qa: qaInput, context: ctx }, result);
+    res.json(result);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// 19. POST /api/ai/redaction-recommender
+router.post('/redaction-recommender', async (req, res) => {
+  try {
+    const { doc_name, body, doc } = req.body || {};
+    const docInput = doc || { name: doc_name || 'Unnamed doc' };
+    const result = await ai.redactionRecommender(docInput, body || '');
+    await record('redaction-recommender', { doc: docInput, body_length: (body || '').length }, result);
+    res.json(result);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// 20. POST /api/ai/deal-summary-generator
+router.post('/deal-summary-generator', async (req, res) => {
+  try {
+    const { deal_summary, linked_notes, deal, linked } = req.body || {};
+    const dealInput = deal || { summary: deal_summary || 'Use current portfolio defaults' };
+    const linkedInput = linked || { notes: linked_notes || '' };
+    const result = await ai.dealSummaryGenerator(dealInput, linkedInput);
+    await record('deal-summary-generator', { deal: dealInput, linked: linkedInput }, result);
+    res.json(result);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// 21. POST /api/ai/risk-flag-extractor
+router.post('/risk-flag-extractor', async (req, res) => {
+  try {
+    const { corpus_notes, focus, corpus, context } = req.body || {};
+    const corp = corpus || { notes: corpus_notes || '' };
+    const ctx = context || { focus: focus || '' };
+    const result = await ai.riskFlagExtractor(corp, ctx);
+    await record('risk-flag-extractor', { corpus: corp, context: ctx }, result);
+    res.json(result);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// 22. POST /api/ai/nda-matcher
+router.post('/nda-matcher', async (req, res) => {
+  try {
+    const { nda_excerpt, template_excerpt, nda, template } = req.body || {};
+    const ndaInput = nda || { excerpt: nda_excerpt || '' };
+    const tmpl = template || { excerpt: template_excerpt || '' };
+    const result = await ai.ndaMatcher(ndaInput, tmpl);
+    await record('nda-matcher', { nda: ndaInput, template: tmpl }, result);
+    res.json(result);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// 23. POST /api/ai/dcf-copilot
+router.post('/dcf-copilot', async (req, res) => {
+  try {
+    const { target_summary, assumptions_notes, target, assumptions } = req.body || {};
+    const tgt = target || { summary: target_summary || '' };
+    const asm = assumptions || { notes: assumptions_notes || '' };
+    const result = await ai.dcfCopilot(tgt, asm);
+    await record('dcf-copilot', { target: tgt, assumptions: asm }, result);
+    res.json(result);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// 24. POST /api/ai/term-sheet-diff-explainer
+router.post('/term-sheet-diff-explainer', async (req, res) => {
+  try {
+    const { diff_notes, context: ctxStr, diff, context } = req.body || {};
+    const diffInput = diff || { notes: diff_notes || '' };
+    const ctx = context || (typeof ctxStr === 'string' ? { notes: ctxStr } : (ctxStr || {}));
+    const result = await ai.termSheetDiffExplainer(diffInput, ctx);
+    await record('term-sheet-diff-explainer', { diff: diffInput, context: ctx }, result);
     res.json(result);
   } catch (e) { res.status(500).json({ error: e.message }); }
 });

@@ -71,6 +71,13 @@ app.use('/api/dashboard', require('./routes/dashboard'));
 // Custom analytics views (Deal Funnel, Comp Scatter, Synergy Waterfall, Closing Gantt)
 app.use('/api/custom-views', require('./routes/customViews'));
 
+// Pass 7 — full backlog implementation:
+//   per-doc permissions (role-based ACL), in-browser viewer w/ watermark + page ACL,
+//   view analytics, audit-log export.
+app.use('/api/vdr-permissions', require('./routes/vdrPermissions'));
+app.use('/api/vdr-viewer',      require('./routes/vdrViewer'));
+app.use('/api/buyer-engagement-score', require('./routes/buyerEngagementScore'));
+
 app.listen(PORT, () => {
   console.log(`\nAI M&A Deal Room API running on http://localhost:${PORT}\n`);
 });
