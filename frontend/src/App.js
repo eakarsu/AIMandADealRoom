@@ -69,6 +69,16 @@ import VdrPermissionsPage            from './pages/VdrPermissionsPage';
 import VdrViewerPage                 from './pages/VdrViewerPage';
 import VdrAnalyticsPage              from './pages/VdrAnalyticsPage';
 import BuyerEngagementScorePage      from './pages/BuyerEngagementScorePage';
+import BuyerPipelinePage             from './pages/BuyerPipelinePage';
+import DealMilestonesPage            from './pages/DealMilestonesPage';
+import DataRequestsPage              from './pages/DataRequestsPage';
+import DocumentComparisonsPage       from './pages/DocumentComparisonsPage';
+import PermissionGroupsPage          from './pages/PermissionGroupsPage';
+import BidRoundsPage                 from './pages/BidRoundsPage';
+import MarketingMaterialsPage        from './pages/MarketingMaterialsPage';
+import DocumentCommentsPage          from './pages/DocumentCommentsPage';
+import ApprovalWorkflowsPage         from './pages/ApprovalWorkflowsPage';
+import ClosingBindersPage            from './pages/ClosingBindersPage';
 
 function RequireAuth({ children }) {
   const location = useLocation();
@@ -94,19 +104,29 @@ function ShellRoutes() {
             <Route path="/deals"                       element={<DealsPage />} />
             <Route path="/targets"                     element={<TargetsPage />} />
             <Route path="/advisors"                    element={<AdvisorsPage />} />
+            <Route path="/buyer-pipeline"              element={<BuyerPipelinePage />} />
             <Route path="/vdr-documents"               element={<VdrDocumentsPage />} />
             <Route path="/q-and-a"                     element={<QAndAPage />} />
             <Route path="/working-groups"              element={<WorkingGroupsPage />} />
+            <Route path="/data-requests"               element={<DataRequestsPage />} />
+            <Route path="/document-comparisons"        element={<DocumentComparisonsPage />} />
+            <Route path="/permission-groups"           element={<PermissionGroupsPage />} />
+            <Route path="/document-comments"           element={<DocumentCommentsPage />} />
             <Route path="/term-sheets"                 element={<TermSheetsPage />} />
             <Route path="/lois"                        element={<LoisPage />} />
+            <Route path="/bid-rounds"                  element={<BidRoundsPage />} />
+            <Route path="/marketing-materials"         element={<MarketingMaterialsPage />} />
             <Route path="/due-diligence-items"         element={<DueDiligenceItemsPage />} />
             <Route path="/financial-models"            element={<FinancialModelsPage />} />
             <Route path="/comps"                       element={<CompsPage />} />
             <Route path="/working-capital-adjustments" element={<WorkingCapitalAdjustmentsPage />} />
             <Route path="/integration-plans"           element={<IntegrationPlansPage />} />
             <Route path="/regulatory-filings"          element={<RegulatoryFilingsPage />} />
+            <Route path="/approval-workflows"          element={<ApprovalWorkflowsPage />} />
             <Route path="/escrow-terms"                element={<EscrowTermsPage />} />
             <Route path="/closing-checklist"           element={<ClosingChecklistPage />} />
+            <Route path="/deal-milestones"             element={<DealMilestonesPage />} />
+            <Route path="/closing-binders"             element={<ClosingBindersPage />} />
             <Route path="/post-close-reports"          element={<PostCloseReportsPage />} />
             <Route path="/audit-log"                   element={<AuditLogPage />} />
 

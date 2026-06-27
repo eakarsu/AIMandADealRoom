@@ -79,19 +79,34 @@ app.use('/api/vdr-permissions', require('./routes/vdrPermissions'));
 app.use('/api/vdr-viewer',      require('./routes/vdrViewer'));
 app.use('/api/buyer-engagement-score', require('./routes/buyerEngagementScore'));
 
-async function ensureVdrSchema() {
-  const schemaPath = path.join(__dirname, 'migrations', '003_schema.sql');
-  const schema = fs.readFileSync(schemaPath, 'utf8');
-  await pool.query(schema);
+// Feature expansion — buyer CRM, deal timeline, request lists,
+// document operations, bid rounds, approvals, and closing binders.
+app.use('/api/buyer-pipeline',       require('./routes/buyerPipeline'));
+app.use('/api/deal-milestones',      require('./routes/dealMilestones'));
+app.use('/api/data-requests',        require('./routes/dataRequests'));
+app.use('/api/document-comparisons', require('./routes/documentComparisons'));
+app.use('/api/permission-groups',    require('./routes/permissionGroups'));
+app.use('/api/bid-rounds',           require('./routes/bidRounds'));
+app.use('/api/marketing-materials',  require('./routes/marketingMaterials'));
+app.use('/api/document-comments',    require('./routes/documentComments'));
+app.use('/api/approval-workflows',   require('./routes/approvalWorkflows'));
+app.use('/api/closing-binders',      require('./routes/closingBinders'));
+
+async function ensureRuntimeSchema() {
+  for (const file of ['003_schema.sql', '004_feature_expansion.sql']) {
+    const schemaPath = path.join(__dirname, 'migrations', file);
+    const schema = fs.readFileSync(schemaPath, 'utf8');
+    await pool.query(schema);
+  }
 }
 
-ensureVdrSchema()
+ensureRuntimeSchema()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`\nAI M&A Deal Room API running on http://localhost:${PORT}\n`);
     });
   })
   .catch((error) => {
-    console.error('Failed to ensure VDR schema:', error);
+    console.error('Failed to ensure runtime schema:', error);
     process.exit(1);
   });

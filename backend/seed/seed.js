@@ -38,6 +38,16 @@ async function run() {
       DROP TABLE IF EXISTS vdr_doc_permissions         CASCADE;
       DROP TABLE IF EXISTS vdr_doc_views               CASCADE;
       DROP TABLE IF EXISTS vdr_watermarks              CASCADE;
+      DROP TABLE IF EXISTS buyer_pipeline              CASCADE;
+      DROP TABLE IF EXISTS deal_milestones             CASCADE;
+      DROP TABLE IF EXISTS data_requests               CASCADE;
+      DROP TABLE IF EXISTS document_comparisons        CASCADE;
+      DROP TABLE IF EXISTS permission_groups           CASCADE;
+      DROP TABLE IF EXISTS bid_rounds                  CASCADE;
+      DROP TABLE IF EXISTS marketing_materials         CASCADE;
+      DROP TABLE IF EXISTS document_comments           CASCADE;
+      DROP TABLE IF EXISTS approval_workflows          CASCADE;
+      DROP TABLE IF EXISTS closing_binders             CASCADE;
 
       DROP TABLE IF EXISTS users                       CASCADE;
       DROP TABLE IF EXISTS notifications               CASCADE;
@@ -53,6 +63,8 @@ async function run() {
     await client.query(schema2);
     const schema3 = fs.readFileSync(path.join(__dirname, '..', 'migrations', '003_schema.sql'), 'utf8');
     await client.query(schema3);
+    const schema4 = fs.readFileSync(path.join(__dirname, '..', 'migrations', '004_feature_expansion.sql'), 'utf8');
+    await client.query(schema4);
 
     console.log('[seed] inserting deals...');
     const deals = [
@@ -514,6 +526,201 @@ async function run() {
       await client.query(
         `INSERT INTO audit_log (entry_id,actor,target,action,result,ts) VALUES ($1,$2,$3,$4,$5,$6)`,
         r
+      );
+    }
+
+    console.log('[seed] inserting feature expansion records...');
+    const buyerNames = [
+      'GSK plc', 'Sanofi SA', 'Maersk Logistics Holdings', 'XPO Logistics', 'Vista Equity Partners',
+      'Brookfield Renewable', 'EDF Renewables', 'KKR Financial Services', 'ZF Friedrichshafen AG', 'Silver Lake Partners',
+      'Toyota Tsusho', 'BorgWarner', 'TransDigm Group', 'Berkshire Hathaway Re', 'SABIC'
+    ];
+    const owners = ['Sarah Whitman','David Chen','Elena Rossi','Michael O\'Brien','Thomas Becker','Sofia Reyes','Priya Iyer','James Holt'];
+    const workstreams = ['financial','tax','legal','commercial','operations','technology','hr','environmental'];
+    const dealIds = deals.map((d) => d[0]);
+    const docIds = docs.map((d) => d[0]);
+
+    for (let i = 0; i < 15; i++) {
+      const dealId = dealIds[i % dealIds.length];
+      const docId = docIds[i % docIds.length];
+      const nextDocId = docIds[(i + 1) % docIds.length];
+      const owner = owners[i % owners.length];
+      const workstream = workstreams[i % workstreams.length];
+      const dueDay = String(10 + (i % 18)).padStart(2, '0');
+      const buyerName = buyerNames[i];
+
+      await client.query(
+        `INSERT INTO buyer_pipeline
+          (buyer_id,deal_id,buyer_name,buyer_type,contact_name,contact_email,stage,interest_score,last_touch_date,next_step,notes)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+        [
+          `BUY-${String(i + 1).padStart(3, '0')}`,
+          dealId,
+          buyerName,
+          ['strategic','sponsor','family_office','consortium','management'][i % 5],
+          `${owner} Coverage`,
+          `dealteam${i + 1}@${buyerName.toLowerCase().replace(/[^a-z0-9]+/g, '')}.example`,
+          ['targeted','teaser_sent','nda_sent','nda_signed','vdr_open','ioi_received','loi_received','inactive'][i % 8],
+          52 + (i * 3) % 45,
+          `2026-05-${String(1 + (i % 24)).padStart(2, '0')}`,
+          ['Send teaser follow-up','Schedule management Q&A','Confirm NDA redline','Open VDR access','Request IOI clarification'][i % 5],
+          `Coverage notes for ${buyerName}: sponsor fit, sector appetite, and diligence responsiveness tracked.`
+        ]
+      );
+
+      await client.query(
+        `INSERT INTO deal_milestones
+          (milestone_id,deal_id,title,category,owner,start_date,due_date,status,dependency,notes)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+        [
+          `MS-${String(i + 1).padStart(3, '0')}`,
+          dealId,
+          ['Teaser launch','NDA cutoff','VDR open','Management presentation','IOI deadline','LOI shortlist','Board approval','Signing target'][i % 8],
+          ['launch','diligence','bid_round','approval','signing','closing','integration'][i % 7],
+          owner,
+          `2026-05-${String(1 + (i % 20)).padStart(2, '0')}`,
+          `2026-06-${dueDay}`,
+          ['not_started','in_progress','blocked','complete','at_risk'][i % 5],
+          i % 3 === 0 ? 'Final CIM approval' : i % 3 === 1 ? 'Buyer NDA execution' : 'Regulatory counsel review',
+          `Milestone controls process pacing for ${dealId}.`
+        ]
+      );
+
+      await client.query(
+        `INSERT INTO data_requests
+          (request_id,deal_id,workstream,requested_item,requested_from,owner,priority,due_date,status,response_summary)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+        [
+          `DRQ-${String(i + 1).padStart(3, '0')}`,
+          dealId,
+          workstream,
+          ['Top customer contracts','Monthly trial balance','Employee census','Cyber insurance policy','Regulatory correspondence','Revenue bridge','Capex support','Litigation schedule'][i % 8],
+          ['Seller CFO','General Counsel','HR Lead','IT Security','Operations VP'][i % 5],
+          owner,
+          ['low','medium','high','urgent'][i % 4],
+          `2026-06-${dueDay}`,
+          ['open','in_progress','answered','overdue','waived'][i % 5],
+          `Request response summary for ${workstream} diligence on ${dealId}.`
+        ]
+      );
+
+      await client.query(
+        `INSERT INTO document_comparisons
+          (comparison_id,deal_id,base_doc_id,revised_doc_id,comparison_type,risk_level,material_changes,reviewer,status)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+        [
+          `CMPDOC-${String(i + 1).padStart(3, '0')}`,
+          dealId,
+          docId,
+          nextDocId,
+          ['redline','version_delta','risk_review','closing_set','disclosure_schedule'][i % 5],
+          ['low','medium','high','critical'][i % 4],
+          `Material changes include covenant edits, diligence disclosure updates, and indemnity language shifts for ${dealId}.`,
+          owner,
+          ['queued','reviewing','approved','needs_follow_up'][i % 4]
+        ]
+      );
+
+      await client.query(
+        `INSERT INTO permission_groups
+          (group_id,deal_id,group_name,group_type,members_count,access_level,watermark,status,notes)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+        [
+          `PG-${String(i + 1).padStart(3, '0')}`,
+          dealId,
+          `${buyerName} Deal Team`,
+          ['bidder','advisor','legal','finance','lender','management','internal'][i % 7],
+          3 + (i % 12),
+          ['teaser','nda','limited_vdr','full_vdr','closing_room','admin'][i % 6],
+          i % 4 !== 0,
+          ['active','paused','revoked','pending'][i % 4],
+          `Permission group controls document access, watermarking, and room visibility for ${buyerName}.`
+        ]
+      );
+
+      await client.query(
+        `INSERT INTO bid_rounds
+          (round_id,deal_id,round_name,bid_deadline,invited_buyers,bids_received,top_bid_usd,status,decision_summary)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+        [
+          `BR-${String(i + 1).padStart(3, '0')}`,
+          dealId,
+          ['Teaser Round','NDA Round','IOI Round','Management Presentation Round','LOI Round','Final Bid Round'][i % 6],
+          `2026-06-${dueDay}`,
+          6 + (i % 18),
+          2 + (i % 9),
+          350000000 + i * 87500000,
+          ['planned','open','evaluating','shortlisted','closed'][i % 5],
+          `Round decision summary tracks valuation, conditionality, financing readiness, and certainty to close.`
+        ]
+      );
+
+      await client.query(
+        `INSERT INTO marketing_materials
+          (material_id,deal_id,material_type,title,owner,version,status,shared_at,notes)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+        [
+          `MAT-${String(i + 1).padStart(3, '0')}`,
+          dealId,
+          ['teaser','cim','management_presentation','lender_deck','qa_packet','process_letter'][i % 6],
+          `${deals[i % deals.length][1]} ${['Teaser','CIM','Management Presentation','Lender Deck','Q&A Packet','Process Letter'][i % 6]}`,
+          owner,
+          `v${1 + (i % 4)}.${i % 3}`,
+          ['draft','internal_review','approved','shared','archived'][i % 5],
+          i % 4 === 0 ? null : `2026-05-${String(2 + (i % 24)).padStart(2, '0')}`,
+          `Marketing material status for controlled distribution and bidder process management.`
+        ]
+      );
+
+      await client.query(
+        `INSERT INTO document_comments
+          (comment_id,doc_id,deal_id,author,visibility,page_ref,comment_body,status)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+        [
+          `COM-${String(i + 1).padStart(3, '0')}`,
+          docId,
+          dealId,
+          owner,
+          ['internal','seller','buyer','advisor','legal'][i % 5],
+          `p.${1 + (i % 16)}`,
+          `Please confirm the support for this disclosure and whether the language should flow into the purchase agreement schedules.`,
+          ['open','resolved','escalated','deferred'][i % 4]
+        ]
+      );
+
+      await client.query(
+        `INSERT INTO approval_workflows
+          (approval_id,deal_id,artifact_type,artifact_id,approver,approval_step,due_date,status,decision_notes)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+        [
+          `APR-${String(i + 1).padStart(3, '0')}`,
+          dealId,
+          ['loi','term_sheet','purchase_agreement','closing_document','board_pack','regulatory_filing'][i % 6],
+          ['LOI','TS','SPA','CL','BP','REG'][i % 6] + `-${String(i + 1).padStart(3, '0')}`,
+          owner,
+          ['Business approval','Legal signoff','Finance approval','Board approval','Regulatory review'][i % 5],
+          `2026-06-${dueDay}`,
+          ['pending','approved','rejected','changes_requested','delegated'][i % 5],
+          `Approval notes capture open conditions, required edits, and decision rationale.`
+        ]
+      );
+
+      await client.query(
+        `INSERT INTO closing_binders
+          (binder_id,deal_id,binder_name,binder_type,document_count,owner,export_format,status,exported_at,notes)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+        [
+          `BND-${String(i + 1).padStart(3, '0')}`,
+          dealId,
+          `${deals[i % deals.length][1]} ${['Deal Book','Board Pack','Signing Set','Closing Binder','Post-Close Archive'][i % 5]}`,
+          ['deal_book','board_pack','signing_set','closing_binder','post_close_archive'][i % 5],
+          12 + (i % 30),
+          owner,
+          ['pdf','zip','xlsx_index','docx','secure_link'][i % 5],
+          ['draft','building','ready','exported','archived'][i % 5],
+          i % 4 === 0 ? `2026-06-${dueDay} 15:00+00` : null,
+          `Binder export package for transaction records, approvals, signing versions, and post-close handoff.`
+        ]
       );
     }
 

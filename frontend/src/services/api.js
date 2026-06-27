@@ -124,6 +124,16 @@ export const escrowTermsApi                 = crud('escrow-terms');
 export const closingChecklistApi            = crud('closing-checklist');
 export const postCloseReportsApi            = crud('post-close-reports');
 export const auditLogApi                    = crud('audit-log');
+export const buyerPipelineApi               = crud('buyer-pipeline');
+export const dealMilestonesApi              = crud('deal-milestones');
+export const dataRequestsApi                = crud('data-requests');
+export const documentComparisonsApi         = crud('document-comparisons');
+export const permissionGroupsApi            = crud('permission-groups');
+export const bidRoundsApi                   = crud('bid-rounds');
+export const marketingMaterialsApi          = crud('marketing-materials');
+export const documentCommentsApi            = crud('document-comments');
+export const approvalWorkflowsApi           = crud('approval-workflows');
+export const closingBindersApi              = crud('closing-binders');
 
 // Dashboard
 export const getDashboardStats = () => request('/dashboard');

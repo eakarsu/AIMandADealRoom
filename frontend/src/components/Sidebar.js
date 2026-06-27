@@ -6,6 +6,7 @@ import { logout, getStoredUser } from '../services/api';
 const DEALS_LINKS = [
   { to: '/deals',    label: 'Deals' },
   { to: '/targets',  label: 'Targets' },
+  { to: '/buyer-pipeline', label: 'Buyer Pipeline' },
   { to: '/advisors', label: 'Advisors' },
 ];
 
@@ -13,8 +14,12 @@ const VDR_LINKS = [
   { to: '/vdr-documents',   label: 'VDR Documents' },
   { to: '/vdr-viewer',      label: 'VDR Viewer' },
   { to: '/vdr-permissions', label: 'VDR Permissions' },
+  { to: '/permission-groups', label: 'Permission Groups' },
   { to: '/vdr-analytics',   label: 'Dataroom Analytics' },
   { to: '/q-and-a',         label: 'Q&A' },
+  { to: '/data-requests',   label: 'Data Requests' },
+  { to: '/document-comments', label: 'Document Comments' },
+  { to: '/document-comparisons', label: 'Document Comparisons' },
   { to: '/working-groups',  label: 'Working Groups' },
 ];
 
@@ -25,6 +30,8 @@ const DILIGENCE_LINKS = [
 
 const COMPS_LINKS = [
   { to: '/comps',         label: 'Comp Transactions' },
+  { to: '/bid-rounds',    label: 'Bid Rounds' },
+  { to: '/marketing-materials', label: 'Marketing Materials' },
   { to: '/term-sheets',   label: 'Term Sheets' },
   { to: '/lois',          label: 'LOIs' },
 ];
@@ -35,8 +42,11 @@ const INTEGRATION_LINKS = [
 ];
 
 const CLOSING_LINKS = [
+  { to: '/deal-milestones',    label: 'Deal Milestones' },
+  { to: '/approval-workflows', label: 'Approval Workflows' },
   { to: '/escrow-terms',       label: 'Escrow Terms' },
   { to: '/closing-checklist',  label: 'Closing Checklist' },
+  { to: '/closing-binders',    label: 'Closing Binders' },
   { to: '/regulatory-filings', label: 'Regulatory Filings' },
   { to: '/post-close-reports', label: 'Post-Close Reports' },
 ];
