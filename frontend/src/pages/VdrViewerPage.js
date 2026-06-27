@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { vdrViewerApi } from '../services/api';
+import { vdrDocumentsApi, vdrViewerApi } from '../services/api';
+import RecordDetailModal from '../components/RecordDetailModal';
 
 // In-browser doc viewer with page-level ACL + server-side watermark overlay metadata.
 // Renders a placeholder page list (the app stores doc metadata, not full PDF bodies),
@@ -7,9 +8,33 @@ import { vdrViewerApi } from '../services/api';
 export default function VdrViewerPage() {
   const [docId, setDocId] = useState('');
   const [data, setData] = useState(null);
+  const [docs, setDocs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [docsLoading, setDocsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedDetail, setSelectedDetail] = useState(null);
   const openedAtRef = useRef(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadDocs() {
+      setDocsLoading(true);
+      try {
+        const rows = await vdrDocumentsApi.list();
+        if (!cancelled) {
+          const list = Array.isArray(rows) ? rows : [];
+          setDocs(list);
+          if (!docId && list.length > 0) setDocId(list[0].doc_id || String(list[0].id));
+        }
+      } catch (e) {
+        if (!cancelled) setError(e.message);
+      } finally {
+        if (!cancelled) setDocsLoading(false);
+      }
+    }
+    loadDocs();
+    return () => { cancelled = true; };
+  }, []);
 
   const load = async () => {
     if (!docId.trim()) return;
@@ -64,6 +89,17 @@ export default function VdrViewerPage() {
         <div className="form-grid">
           <div className="form-group">
             <label>Doc ID</label>
+            <select value={docId} onChange={(e) => { setDocId(e.target.value); setData(null); }} disabled={docsLoading}>
+              <option value="">{docsLoading ? 'Loading documents...' : 'Select document'}</option>
+              {docs.map((doc) => (
+                <option key={doc.id || doc.doc_id} value={doc.doc_id || doc.id}>
+                  {(doc.doc_id || doc.id)} · {doc.name || 'Untitled'}{doc.category ? ` · ${doc.category}` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Manual Doc ID</label>
             <input value={docId} onChange={(e) => setDocId(e.target.value)} placeholder="e.g. VDR-0042" />
           </div>
         </div>
@@ -77,7 +113,11 @@ export default function VdrViewerPage() {
 
       {data && (
         <>
-          <div className="card" style={{ marginBottom: 12 }}>
+          <div
+            className="card clickable-card"
+            style={{ marginBottom: 12 }}
+            onClick={() => setSelectedDetail(data.permission)}
+          >
             <h3>Permission</h3>
             <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12 }}>
               {JSON.stringify(data.permission, null, 2)}
@@ -85,32 +125,32 @@ export default function VdrViewerPage() {
           </div>
 
           {data.watermark && (
-            <div className="card" style={{
+            <div className="card clickable-card" style={{
               marginBottom: 12,
               background: 'rgba(255, 200, 0, 0.06)',
               border: '1px dashed rgba(255, 200, 0, 0.6)',
-            }}>
+            }} onClick={() => setSelectedDetail(data.watermark)}>
               <strong>Watermark overlay (server-issued):</strong>
               <div style={{ marginTop: 6, fontFamily: 'monospace', fontSize: 12 }}>{data.watermark.overlay_text}</div>
               <div style={{ marginTop: 4, opacity: 0.7, fontSize: 11 }}>id: {data.watermark.watermark_id}</div>
             </div>
           )}
 
-          <div className="card">
+          <div className="card clickable-card" onClick={() => setSelectedDetail(data.doc)}>
             <h3>{data.doc?.name || data.doc?.doc_id}</h3>
             <p style={{ opacity: 0.7, fontSize: 12 }}>
               {data.doc?.category || 'uncategorized'} · {data.pages?.length || 0} pages served (range {data.permission?.page_range?.start}–{data.permission?.page_range?.end || 'end'})
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
               {(data.pages || []).map((p) => (
-                <div key={p.page} style={{
+                <div key={p.page} className="clickable-card" style={{
                   position: 'relative',
                   border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: 6,
                   padding: '24px 16px',
                   minHeight: 120,
                   background: 'rgba(255,255,255,0.02)',
-                }}>
+                }} onClick={(event) => { event.stopPropagation(); setSelectedDetail(p); }}>
                   {data.watermark && (
                     <div style={{
                       position: 'absolute',
@@ -136,6 +176,14 @@ export default function VdrViewerPage() {
             </div>
           </div>
         </>
+      )}
+
+      {selectedDetail && (
+        <RecordDetailModal
+          record={selectedDetail}
+          title={selectedDetail.name || selectedDetail.doc_id || selectedDetail.watermark_id || `Page ${selectedDetail.page || ''}`.trim() || 'VDR Details'}
+          onClose={() => setSelectedDetail(null)}
+        />
       )}
     </div>
   );

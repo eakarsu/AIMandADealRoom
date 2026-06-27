@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const { authenticateToken } = require('./middleware/auth');
@@ -78,6 +79,19 @@ app.use('/api/vdr-permissions', require('./routes/vdrPermissions'));
 app.use('/api/vdr-viewer',      require('./routes/vdrViewer'));
 app.use('/api/buyer-engagement-score', require('./routes/buyerEngagementScore'));
 
-app.listen(PORT, () => {
-  console.log(`\nAI M&A Deal Room API running on http://localhost:${PORT}\n`);
-});
+async function ensureVdrSchema() {
+  const schemaPath = path.join(__dirname, 'migrations', '003_schema.sql');
+  const schema = fs.readFileSync(schemaPath, 'utf8');
+  await pool.query(schema);
+}
+
+ensureVdrSchema()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`\nAI M&A Deal Room API running on http://localhost:${PORT}\n`);
+    });
+  })
+  .catch((error) => {
+    console.error('Failed to ensure VDR schema:', error);
+    process.exit(1);
+  });

@@ -35,6 +35,9 @@ async function run() {
       DROP TABLE IF EXISTS post_close_reports          CASCADE;
       DROP TABLE IF EXISTS audit_log                   CASCADE;
       DROP TABLE IF EXISTS ai_results                  CASCADE;
+      DROP TABLE IF EXISTS vdr_doc_permissions         CASCADE;
+      DROP TABLE IF EXISTS vdr_doc_views               CASCADE;
+      DROP TABLE IF EXISTS vdr_watermarks              CASCADE;
 
       DROP TABLE IF EXISTS users                       CASCADE;
       DROP TABLE IF EXISTS notifications               CASCADE;
@@ -48,6 +51,8 @@ async function run() {
     await client.query(schema1);
     const schema2 = fs.readFileSync(path.join(__dirname, '..', 'migrations', '002_schema.sql'), 'utf8');
     await client.query(schema2);
+    const schema3 = fs.readFileSync(path.join(__dirname, '..', 'migrations', '003_schema.sql'), 'utf8');
+    await client.query(schema3);
 
     console.log('[seed] inserting deals...');
     const deals = [
@@ -146,6 +151,19 @@ async function run() {
       await client.query(
         `INSERT INTO vdr_documents (doc_id,deal_id,name,category,uploaded_at,version) VALUES ($1,$2,$3,$4,$5,$6)`,
         r
+      );
+    }
+
+    console.log('[seed] inserting vdr permissions...');
+    for (const [docId] of docs) {
+      await client.query(
+        `INSERT INTO vdr_doc_permissions
+          (doc_id, role, can_view, can_download, watermark_required, page_range_start, page_range_end, granted_by)
+         VALUES
+          ($1, 'admin', TRUE, TRUE, FALSE, NULL, NULL, 'seed'),
+          ($1, 'advisor', TRUE, TRUE, TRUE, NULL, NULL, 'seed'),
+          ($1, 'viewer', TRUE, FALSE, TRUE, 1, 8, 'seed')`,
+        [docId]
       );
     }
 

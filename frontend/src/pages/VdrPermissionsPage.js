@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { vdrPermissionsApi, isAdmin } from '../services/api';
+import { vdrDocumentsApi, vdrPermissionsApi, isAdmin } from '../services/api';
+import RecordDetailModal from '../components/RecordDetailModal';
 
 const ROLES = ['admin', 'advisor', 'viewer'];
 
@@ -20,6 +21,8 @@ export default function VdrPermissionsPage() {
   const [error, setError] = useState(null);
   const [draft, setDraft] = useState(empty);
   const [editingId, setEditingId] = useState(null);
+  const [docs, setDocs] = useState([]);
+  const [selectedGrant, setSelectedGrant] = useState(null);
 
   const load = async () => {
     setLoading(true);
@@ -34,7 +37,12 @@ export default function VdrPermissionsPage() {
     }
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    vdrDocumentsApi.list()
+      .then((rows) => setDocs(Array.isArray(rows) ? rows : []))
+      .catch(() => setDocs([]));
+  }, []);
 
   const update = (k, v) => setDraft((d) => ({ ...d, [k]: v }));
 
@@ -58,6 +66,7 @@ export default function VdrPermissionsPage() {
   };
 
   const edit = (row) => {
+    setSelectedGrant(null);
     setEditingId(row.id);
     setDraft({
       doc_id: row.doc_id || '',
@@ -72,7 +81,7 @@ export default function VdrPermissionsPage() {
 
   const remove = async (id) => {
     if (!window.confirm('Revoke this grant?')) return;
-    try { await vdrPermissionsApi.remove(id); await load(); }
+    try { await vdrPermissionsApi.remove(id); setSelectedGrant(null); await load(); }
     catch (e) { setError(e.message); }
   };
 
@@ -93,6 +102,17 @@ export default function VdrPermissionsPage() {
           <div className="form-grid">
             <div className="form-group">
               <label>Doc ID</label>
+              <select value={draft.doc_id} onChange={(e) => update('doc_id', e.target.value)}>
+                <option value="">Select document</option>
+                {docs.map((doc) => (
+                  <option key={doc.id || doc.doc_id} value={doc.doc_id || doc.id}>
+                    {(doc.doc_id || doc.id)} · {doc.name || 'Untitled'}{doc.category ? ` · ${doc.category}` : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Manual Doc ID</label>
               <input value={draft.doc_id} onChange={(e) => update('doc_id', e.target.value)} placeholder="e.g. VDR-0042" />
             </div>
             <div className="form-group">
@@ -151,12 +171,22 @@ export default function VdrPermissionsPage() {
                 <th>Watermark</th>
                 <th>Pages</th>
                 <th>Granted by</th>
-                {admin && <th></th>}
               </tr>
             </thead>
             <tbody>
               {rows.map((r) => (
-                <tr key={r.id}>
+                <tr
+                  key={r.id}
+                  className="clickable-row"
+                  tabIndex={0}
+                  onClick={() => setSelectedGrant(r)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      setSelectedGrant(r);
+                    }
+                  }}
+                >
                   <td>{r.id}</td>
                   <td>{r.doc_id}</td>
                   <td>{r.role}</td>
@@ -165,18 +195,22 @@ export default function VdrPermissionsPage() {
                   <td>{r.watermark_required ? 'required' : 'off'}</td>
                   <td>{(r.page_range_start || 1)}–{r.page_range_end || 'end'}</td>
                   <td>{r.granted_by || '—'}</td>
-                  {admin && (
-                    <td>
-                      <button className="btn secondary" onClick={() => edit(r)}>Edit</button>
-                      <button className="btn danger" onClick={() => remove(r.id)} style={{ marginLeft: 6 }}>Revoke</button>
-                    </td>
-                  )}
                 </tr>
               ))}
             </tbody>
           </table>
         )}
       </div>
+
+      {selectedGrant && (
+        <RecordDetailModal
+          record={selectedGrant}
+          title="VDR Permission Details"
+          onClose={() => setSelectedGrant(null)}
+          onEdit={admin ? () => edit(selectedGrant) : null}
+          onDelete={admin ? () => remove(selectedGrant.id) : null}
+        />
+      )}
     </div>
   );
 }

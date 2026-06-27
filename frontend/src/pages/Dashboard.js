@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getDashboardStats } from '../services/api';
 
 const FEATURES = [
   { path: '/deals',                       title: 'Deals',                       icon: 'D', color: '#3b82f6', desc: 'Active and historical M&A transactions across stages.' },
@@ -42,12 +41,6 @@ const FEATURES = [
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [stats, setStats] = useState(null);
-  const [err, setErr] = useState(null);
-
-  useEffect(() => {
-    getDashboardStats().then(setStats).catch((e) => setErr(e.message));
-  }, []);
 
   return (
     <div>
@@ -55,31 +48,6 @@ export default function Dashboard() {
         <h2>Deal Room Overview</h2>
         <p>M&A workflow + VDR snapshot · {new Date().toUTCString()}</p>
       </div>
-
-      {err && <div className="ai-error">Stats unavailable: {err}</div>}
-
-      {stats && (
-        <div className="stats-grid">
-          <div className="stat"><div className="stat-label">Deals</div><div className="stat-value">{stats.deals?.total ?? '—'}</div><div className="stat-sub">{stats.deals?.diligence ?? 0} diligence · {stats.deals?.closing ?? 0} closing</div></div>
-          <div className="stat"><div className="stat-label">Targets</div><div className="stat-value">{stats.targets?.total ?? '—'}</div><div className="stat-sub">${Number(stats.targets?.total_revenue || 0).toLocaleString()} revenue</div></div>
-          <div className="stat"><div className="stat-label">Advisors</div><div className="stat-value">{stats.advisors?.total ?? '—'}</div><div className="stat-sub">{stats.advisors?.active ?? 0} active</div></div>
-          <div className="stat"><div className="stat-label">VDR Docs</div><div className="stat-value">{stats.vdr_documents?.total ?? '—'}</div><div className="stat-sub">documents indexed</div></div>
-          <div className="stat"><div className="stat-label">Q&amp;A</div><div className="stat-value">{stats.q_and_a?.total ?? '—'}</div><div className="stat-sub">{stats.q_and_a?.open ?? 0} open · {stats.q_and_a?.answered ?? 0} answered</div></div>
-          <div className="stat"><div className="stat-label">Working Groups</div><div className="stat-value">{stats.working_groups?.total ?? '—'}</div><div className="stat-sub">{stats.working_groups?.active ?? 0} active</div></div>
-          <div className="stat"><div className="stat-label">Term Sheets</div><div className="stat-value">{stats.term_sheets?.total ?? '—'}</div><div className="stat-sub">{stats.term_sheets?.signed ?? 0} signed · {stats.term_sheets?.circulating ?? 0} circulating</div></div>
-          <div className="stat"><div className="stat-label">LOIs</div><div className="stat-value">{stats.lois?.total ?? '—'}</div><div className="stat-sub">{stats.lois?.signed ?? 0} signed · {stats.lois?.under_review ?? 0} review</div></div>
-          <div className="stat"><div className="stat-label">DD Items</div><div className="stat-value">{stats.due_diligence_items?.total ?? '—'}</div><div className="stat-sub">{stats.due_diligence_items?.open ?? 0} open · {stats.due_diligence_items?.in_review ?? 0} review</div></div>
-          <div className="stat"><div className="stat-label">Models</div><div className="stat-value">{stats.financial_models?.total ?? '—'}</div><div className="stat-sub">{stats.financial_models?.approved ?? 0} approved</div></div>
-          <div className="stat"><div className="stat-label">Comps</div><div className="stat-value">{stats.comps?.total ?? '—'}</div><div className="stat-sub">precedent transactions</div></div>
-          <div className="stat"><div className="stat-label">NWC Adj</div><div className="stat-value">{stats.working_capital_adjustments?.total ?? '—'}</div><div className="stat-sub">{stats.working_capital_adjustments?.disputed ?? 0} disputed</div></div>
-          <div className="stat"><div className="stat-label">Integration</div><div className="stat-value">{stats.integration_plans?.total ?? '—'}</div><div className="stat-sub">{stats.integration_plans?.at_risk ?? 0} at risk</div></div>
-          <div className="stat"><div className="stat-label">Reg Filings</div><div className="stat-value">{stats.regulatory_filings?.total ?? '—'}</div><div className="stat-sub">{stats.regulatory_filings?.cleared ?? 0} cleared · {stats.regulatory_filings?.under_review ?? 0} review</div></div>
-          <div className="stat"><div className="stat-label">Escrows</div><div className="stat-value">{stats.escrow_terms?.total ?? '—'}</div><div className="stat-sub">${Number(stats.escrow_terms?.total_amount || 0).toLocaleString()}</div></div>
-          <div className="stat"><div className="stat-label">Closing</div><div className="stat-value">{stats.closing_checklist?.total ?? '—'}</div><div className="stat-sub">{stats.closing_checklist?.complete ?? 0} done · {stats.closing_checklist?.open ?? 0} open</div></div>
-          <div className="stat"><div className="stat-label">Post-Close</div><div className="stat-value">{stats.post_close_reports?.total ?? '—'}</div><div className="stat-sub">{stats.post_close_reports?.behind ?? 0} behind · {stats.post_close_reports?.at_risk ?? 0} at risk</div></div>
-          <div className="stat"><div className="stat-label">Audit Events</div><div className="stat-value">{stats.audit_log?.total ?? '—'}</div><div className="stat-sub">{stats.audit_log?.denied ?? 0} denied</div></div>
-        </div>
-      )}
 
       <h3 style={{ color: '#cbd5e1', margin: '8px 0 14px', fontSize: 15, textTransform: 'uppercase', letterSpacing: 1 }}>Capabilities</h3>
       <div className="feature-grid">

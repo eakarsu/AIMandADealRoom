@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { vdrViewerApi, getToken } from '../services/api';
+import RecordDetailModal from '../components/RecordDetailModal';
 
 // Dataroom analytics + audit-log export. Read access is broad; the underlying
 // endpoints enforce admin/advisor RBAC.
@@ -7,6 +8,7 @@ export default function VdrAnalyticsPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedDetail, setSelectedDetail] = useState(null);
 
   const load = async () => {
     setLoading(true);
@@ -58,7 +60,11 @@ export default function VdrAnalyticsPage() {
 
       {data && (
         <>
-          <div className="card" style={{ marginBottom: 12 }}>
+          <div
+            className="card clickable-card"
+            style={{ marginBottom: 12 }}
+            onClick={() => setSelectedDetail({ title: 'Totals', ...data.totals })}
+          >
             <h3>Totals</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
               <Stat label="Total views" value={data.totals?.total_views} />
@@ -79,7 +85,18 @@ export default function VdrAnalyticsPage() {
                 </thead>
                 <tbody>
                   {data.by_doc.map((r) => (
-                    <tr key={r.doc_id}>
+                    <tr
+                      key={r.doc_id}
+                      className="clickable-row"
+                      tabIndex={0}
+                      onClick={() => setSelectedDetail(r)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          setSelectedDetail(r);
+                        }
+                      }}
+                    >
                       <td>{r.doc_id}</td>
                       <td>{r.views}</td>
                       <td>{r.unique_viewers}</td>
@@ -102,7 +119,18 @@ export default function VdrAnalyticsPage() {
                 </thead>
                 <tbody>
                   {data.by_viewer.map((r) => (
-                    <tr key={`${r.viewer_email}-${r.viewer_role}`}>
+                    <tr
+                      key={`${r.viewer_email}-${r.viewer_role}`}
+                      className="clickable-row"
+                      tabIndex={0}
+                      onClick={() => setSelectedDetail(r)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          setSelectedDetail(r);
+                        }
+                      }}
+                    >
                       <td>{r.viewer_email}</td>
                       <td>{r.viewer_role || '—'}</td>
                       <td>{r.views}</td>
@@ -116,6 +144,14 @@ export default function VdrAnalyticsPage() {
             )}
           </div>
         </>
+      )}
+
+      {selectedDetail && (
+        <RecordDetailModal
+          record={selectedDetail}
+          title={selectedDetail.title || selectedDetail.doc_id || selectedDetail.viewer_email || 'Analytics Details'}
+          onClose={() => setSelectedDetail(null)}
+        />
       )}
     </div>
   );
