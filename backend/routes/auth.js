@@ -3,16 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET, authenticateToken } = require('../middleware/auth');
 const pool = require('../config/database');
-
-// Fallback demo admin used when the users table is unavailable
-// (e.g. before the v2 migration is applied). Never overwritten anywhere.
-const DEMO_USER = {
-  id: 1,
-  email: 'admin@mandadeal.io',
-  password: 'admin123',
-  name: 'M&A Admin',
-  role: 'admin',
-};
+const { verifyPassword } = require('../services/passwords');
 
 async function findDbUser(email, password) {
   try {
@@ -22,7 +13,7 @@ async function findDbUser(email, password) {
     );
     if (!r.rows.length) return null;
     const u = r.rows[0];
-    if (u.password !== password) return null;
+    if (!verifyPassword(password, u.password)) return null;
     return { id: u.id, email: u.email, name: u.name, role: u.role };
   } catch (e) {
     return null;
@@ -37,19 +28,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'email and password are required' });
     }
 
-    let user = await findDbUser(email, password);
-
-    if (!user) {
-      // Hardcoded demo commander still works even if users table missing
-      if (email === DEMO_USER.email && password === DEMO_USER.password) {
-        user = {
-          id: DEMO_USER.id,
-          email: DEMO_USER.email,
-          name: DEMO_USER.name,
-          role: DEMO_USER.role,
-        };
-      }
-    }
+    const user = await findDbUser(email, password);
 
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });
@@ -64,13 +43,17 @@ router.post('/login', async (req, res) => {
 });
 
 // GET /api/auth/me
-router.get('/me', authenticateToken, (req, res) => {
-  res.json({
-    id: req.user.id,
-    email: req.user.email,
-    name: req.user.name,
-    role: req.user.role,
-  });
+router.get('/me', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, email, name, role, created_at FROM users WHERE id = $1 LIMIT 1',
+      [req.user.id]
+    );
+    if (!result.rows.length) return res.status(404).json({ error: 'User not found' });
+    return res.json(result.rows[0]);
+  } catch (_) {
+    return res.status(503).json({ error: 'Authentication service unavailable' });
+  }
 });
 
 // GET /api/auth/users  (admin only)

@@ -1,7 +1,16 @@
 const fs = require('fs');
 const path = require('path');
 const { Pool } = require('pg');
+const { hashPassword } = require('../services/passwords');
 require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
+
+if (process.env.NODE_ENV === 'production' || !['true', '1', 'YES'].includes(process.env.ALLOW_DESTRUCTIVE_SEED || '')) {
+  throw new Error('Destructive demo seed is disabled outside an explicitly disposable database');
+}
+const demoPassword = process.env.DEMO_ADMIN_PASSWORD || process.env.DEMO_SEED_PASSWORD;
+if (!demoPassword || demoPassword.length < 12) {
+  throw new Error('DEMO_ADMIN_PASSWORD or DEMO_SEED_PASSWORD must contain at least 12 characters');
+}
 
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
@@ -65,6 +74,8 @@ async function run() {
     await client.query(schema3);
     const schema4 = fs.readFileSync(path.join(__dirname, '..', 'migrations', '004_feature_expansion.sql'), 'utf8');
     await client.query(schema4);
+    const schema5 = fs.readFileSync(path.join(__dirname, '..', 'migrations', '005_governed_financial_workflow.sql'), 'utf8');
+    await client.query(schema5);
 
     console.log('[seed] inserting deals...');
     const deals = [
@@ -725,10 +736,11 @@ async function run() {
     }
 
     console.log('[seed] inserting users...');
+    const demoAdminEmail = process.env.DEMO_ADMIN_EMAIL || process.env.ADMIN_EMAIL || 'admin@mandadeal.io';
     const users = [
-      ['admin@mandadeal.io',   'admin123',   'M&A Admin',     'admin'],
-      ['advisor@mandadeal.io', 'advisor123', 'Lead Advisor',  'advisor'],
-      ['viewer@mandadeal.io',  'viewer123',  'Bidder Viewer', 'viewer'],
+      [demoAdminEmail,         hashPassword(demoPassword), 'M&A Admin',     'admin'],
+      ['advisor@mandadeal.io', hashPassword(process.env.DEMO_MANAGER_PASSWORD || demoPassword), 'Lead Advisor',  'advisor'],
+      ['viewer@mandadeal.io',  hashPassword(process.env.DEMO_VIEWER_PASSWORD || demoPassword), 'Bidder Viewer', 'viewer'],
     ];
     for (const u of users) {
       await client.query(

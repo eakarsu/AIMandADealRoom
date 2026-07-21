@@ -8,6 +8,11 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const { authenticateToken } = require('./middleware/auth');
 const pool = require('./config/database');
 const { fireWebhook } = require('./services/webhooks');
+const { validateRuntime } = require('./governance/runtime');
+const governanceRouter = require('./governance/router');
+const { createProviderGate } = require('./governance/providerGate');
+
+validateRuntime();
 
 const app = express();
 const PORT = process.env.BACKEND_PORT || 3071;
@@ -26,6 +31,7 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
+app.use(createProviderGate(['/api/ai']));
 
 // Health check (public)
 app.get('/api/health', (req, res) => {
@@ -91,6 +97,7 @@ app.use('/api/marketing-materials',  require('./routes/marketingMaterials'));
 app.use('/api/document-comments',    require('./routes/documentComments'));
 app.use('/api/approval-workflows',   require('./routes/approvalWorkflows'));
 app.use('/api/closing-binders',      require('./routes/closingBinders'));
+app.use('/api/governed-deal-financials', governanceRouter);
 
 async function ensureRuntimeSchema() {
   for (const file of ['003_schema.sql', '004_feature_expansion.sql']) {
@@ -100,13 +107,14 @@ async function ensureRuntimeSchema() {
   }
 }
 
-ensureRuntimeSchema()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`\nAI M&A Deal Room API running on http://localhost:${PORT}\n`);
-    });
-  })
-  .catch((error) => {
-    console.error('Failed to ensure runtime schema:', error);
-    process.exit(1);
+async function start() {
+  if (process.env.ENABLE_LEGACY_SCHEMA_BOOTSTRAP === 'true') await ensureRuntimeSchema();
+  app.listen(PORT, () => {
+    console.log(`\nAI M&A Deal Room API running on http://localhost:${PORT}\n`);
   });
+}
+
+start().catch((error) => {
+  console.error('Server startup failed:', error);
+  process.exit(1);
+});
