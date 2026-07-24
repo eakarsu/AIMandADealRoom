@@ -2,11 +2,16 @@
 set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$PROJECT_DIR"
+require_file() { [ -f "$1" ] || { echo "Missing required file: $1" >&2; exit 1; }; }
+require_file .env
+set -a
+source ./.env
+set +a
 BACKEND_PORT="${BACKEND_PORT:-3071}"
 FRONTEND_PORT="${FRONTEND_PORT:-3070}"
 CHILD_PIDS=()
 
-require_file() { [ -f "$1" ] || { echo "Missing required file: $1" >&2; exit 1; }; }
 require_dir() { [ -d "$1" ] || { echo "Missing dependencies: $1 (install explicitly before startup)" >&2; exit 1; }; }
 port_free() {
   if command -v lsof >/dev/null 2>&1 && lsof -ti ":$1" >/dev/null 2>&1; then
@@ -17,7 +22,6 @@ port_free() {
 cleanup() { for pid in "${CHILD_PIDS[@]:-}"; do [ -n "$pid" ] && kill "$pid" 2>/dev/null || true; done; }
 trap cleanup INT TERM EXIT
 
-require_file "$PROJECT_DIR/.env"
 require_dir "$PROJECT_DIR/backend/node_modules"
 if [[ "${NODE_ENV:-}" == "test" ]]; then
   exec env BACKEND_PORT="$BACKEND_PORT" node "$PROJECT_DIR/backend/server.js"
@@ -26,12 +30,16 @@ require_dir "$PROJECT_DIR/frontend/node_modules"
 port_free "$BACKEND_PORT"
 port_free "$FRONTEND_PORT"
 
+if [[ "${ALLOW_SCHEMA_MIGRATION:-false}" == "true" ]]; then
+  node backend/scripts/provisionRuntimeAdmin.js
+fi
+
 ALLOWED_ORIGINS_VALUE="${ALLOWED_ORIGINS:-}"
 if [[ "${NODE_ENV:-development}" != "production" ]]; then ALLOWED_ORIGINS_VALUE="${ALLOWED_ORIGINS_VALUE:-http://127.0.0.1:$FRONTEND_PORT}"; fi
 (cd "$PROJECT_DIR/backend" && BACKEND_PORT="$BACKEND_PORT" ALLOWED_ORIGINS="$ALLOWED_ORIGINS_VALUE" node server.js) &
 CHILD_PIDS+=("$!")
-(cd "$PROJECT_DIR/frontend" && PORT="$FRONTEND_PORT" BROWSER=none REACT_APP_API_BASE="${REACT_APP_API_BASE:-http://127.0.0.1:$BACKEND_PORT/api}" npm start) &
+(cd "$PROJECT_DIR/frontend" && PORT="$FRONTEND_PORT" BROWSER=none CI=true REACT_APP_API_ORIGIN="http://127.0.0.1:$BACKEND_PORT" npm start) &
 CHILD_PIDS+=("$!")
 
-echo "Deal-room services started without installing, seeding, migrating, or reclaiming ports."
+echo "Deal-room services started without installing, seeding, or reclaiming ports."
 wait "${CHILD_PIDS[@]}"

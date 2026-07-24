@@ -1,40 +1,7 @@
 // AI helper service for AIMandADealRoom
-// Reads OPENROUTER_API_KEY and OPENROUTER_MODEL from:
-//   1. this project's .env (already loaded by server.js)
-//   2. fallback: /Users/erolakarsu/projects/beauty-wellness-ai/.env (canonical source)
-// Never overwrites or wipes credentials.
-
-const fs = require('fs');
-const path = require('path');
-
-const FALLBACK_ENV = '/Users/erolakarsu/projects/beauty-wellness-ai/.env';
-
-function readFallbackEnv() {
-  try {
-    if (!fs.existsSync(FALLBACK_ENV)) return {};
-    const raw = fs.readFileSync(FALLBACK_ENV, 'utf8');
-    const out = {};
-    for (const line of raw.split('\n')) {
-      const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
-      if (!m) continue;
-      let val = m[2];
-      if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
-      if (val.startsWith("'") && val.endsWith("'")) val = val.slice(1, -1);
-      out[m[1]] = val;
-    }
-    return out;
-  } catch (e) {
-    console.warn('[ai] fallback env read failed:', e.message);
-    return {};
-  }
-}
-
-function getOpenRouterCreds() {
-  const fb = readFallbackEnv();
-  const key = process.env.OPENROUTER_API_KEY || fb.OPENROUTER_API_KEY || '';
-  const model = process.env.OPENROUTER_MODEL || fb.OPENROUTER_MODEL || 'anthropic/claude-haiku-4.5';
-  return { key, model };
-}
+// Credentials and model are loaded only from this project's ignored runtime
+// environment. Provider failures propagate to the API instead of becoming
+// application-looking fallback content.
 
 const SYSTEM_PROMPT =
   'You are a senior M&A deal advisor supporting a virtual data room and deal-execution platform. ' +
@@ -43,14 +10,20 @@ const SYSTEM_PROMPT =
   'exact schema requested. Treat all inputs as illustrative; never produce material non-public information ' +
   'or actionable trading advice.';
 
-function callOpenRouter(systemPrompt, userPrompt) {
-  return new Promise((resolve, reject) => {
-    const { key, model } = getOpenRouterCreds();
-    if (!key) {
-      return resolve({ error: 'OPENROUTER_API_KEY not configured' });
-    }
-    const https = require('https');
-    const payload = JSON.stringify({
+async function callOpenRouter(systemPrompt, userPrompt) {
+    const key = process.env.OPENROUTER_API_KEY;
+    const model = process.env.OPENROUTER_MODEL;
+    if (!key || !model) throw new Error('OpenRouter credentials are not configured');
+    const baseUrl = (process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1').replace(/\/$/, '');
+    const response = await fetch(`${baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${key}`,
+        'HTTP-Referer': 'http://localhost:3070',
+        'X-Title': 'AI M&A Deal Room',
+      },
+      body: JSON.stringify({
       model,
       messages: [
         { role: 'system', content: systemPrompt },
@@ -58,41 +31,13 @@ function callOpenRouter(systemPrompt, userPrompt) {
       ],
       temperature: 0.6,
       max_tokens: 2000,
+      }),
     });
-
-    const options = {
-      hostname: 'openrouter.ai',
-      path: '/api/v1/chat/completions',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(payload),
-        Authorization: `Bearer ${key}`,
-        'HTTP-Referer': 'http://localhost:3070',
-        'X-Title': 'AI M&A Deal Room',
-      },
-    };
-
-    const req = https.request(options, (res) => {
-      let body = '';
-      res.on('data', (chunk) => (body += chunk));
-      res.on('end', () => {
-        try {
-          const parsed = JSON.parse(body);
-          if (parsed.error) {
-            return resolve({ error: parsed.error.message || 'OpenRouter error', raw: body });
-          }
-          const content = parsed.choices?.[0]?.message?.content || '';
-          resolve(content);
-        } catch (e) {
-          resolve({ error: 'AI response parse failed', raw: body });
-        }
-      });
-    });
-    req.on('error', (e) => resolve({ error: e.message }));
-    req.write(payload);
-    req.end();
-  });
+    const parsed = await response.json().catch(() => ({}));
+    if (!response.ok || parsed.error) throw new Error(parsed.error?.message || `OpenRouter HTTP ${response.status}`);
+    const content = parsed.choices?.[0]?.message?.content;
+    if (!content || !String(content).trim()) throw new Error('OpenRouter returned empty content');
+    return content;
 }
 
 function safeJsonParse(response, fallback) {
