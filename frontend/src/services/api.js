@@ -1,7 +1,9 @@
-const API_BASE =
+const configuredApiBase =
   (typeof window !== 'undefined' && window.__API_BASE__) ||
   process.env.REACT_APP_API_BASE ||
-  'http://localhost:3071/api';
+  process.env.REACT_APP_API_ORIGIN ||
+  'http://localhost:3071';
+const API_BASE = `${configuredApiBase.replace(/\/$/, '')}${configuredApiBase.endsWith('/api') ? '' : '/api'}`;
 
 export { API_BASE };
 
