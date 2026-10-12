@@ -13,7 +13,7 @@ export default function AIClosingChecklistPage() {
         { key: 'signing_date', label: 'Signing Date', type: 'date' },
         { key: 'closing_date', label: 'Closing Date', type: 'date' },
       ]}
-      run={(v) => aiClosingChecklistGen(v)}
+      run={(v, requestOptions) => aiClosingChecklistGen(v, requestOptions)}
     />
   );
 }

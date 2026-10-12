@@ -13,7 +13,7 @@ export default function AIQofeMemoPage() {
         { key: 'financials_notes', label: 'Reported Financials & Adjustments', type: 'textarea' },
         { key: 'context',          label: 'Context Notes', type: 'textarea' },
       ]}
-      run={(v) => aiQofeMemo(v)}
+      run={(v, requestOptions) => aiQofeMemo(v, requestOptions)}
     />
   );
 }

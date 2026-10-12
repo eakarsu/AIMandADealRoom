@@ -13,11 +13,11 @@ export default function AIDocumentClassifierPage() {
         { key: 'body_snippet', label: 'Body Snippet',   type: 'textarea', placeholder: 'Paste the first paragraph or summary of the document.' },
         { key: 'deal_context', label: 'Deal Context',   type: 'textarea', placeholder: 'Which deal does this doc belong to and which workstream is reviewing it?' },
       ]}
-      run={(v) => aiDocumentClassifier({
+      run={(v, requestOptions) => aiDocumentClassifier({
         name: v.name,
         body_snippet: v.body_snippet,
         deal_context: v.deal_context,
-      })}
+      }, requestOptions)}
     />
   );
 }

@@ -13,11 +13,11 @@ export default function AIQaCopilotPage() {
         { key: 'existing_partial_answer', label: 'Existing Partial', type: 'textarea', placeholder: 'Optional — partial answer to refine.' },
         { key: 'vdr_notes',               label: 'VDR Notes',        type: 'textarea', placeholder: 'Pointers to relevant docs / workstreams / dataroom folders.' },
       ]}
-      run={(v) => aiQaCopilot({
+      run={(v, requestOptions) => aiQaCopilot({
         question: v.question,
         existing_partial_answer: v.existing_partial_answer,
         vdr_notes: v.vdr_notes,
-      })}
+      }, requestOptions)}
     />
   );
 }

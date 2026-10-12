@@ -12,7 +12,7 @@ export default function AITermSheetDiffExplainerPage() {
         { key: 'diff_notes', label: 'Diff Notes', type: 'textarea', placeholder: 'Summarize the changes between term-sheet versions.' },
         { key: 'context',    label: 'Context',    type: 'textarea', placeholder: 'Deal context, what changed in DD, buyer/seller motivations.' },
       ]}
-      run={(v) => aiTermSheetDiffExplainer({ diff_notes: v.diff_notes, context: v.context })}
+      run={(v, requestOptions) => aiTermSheetDiffExplainer({ diff_notes: v.diff_notes, context: v.context }, requestOptions)}
     />
   );
 }

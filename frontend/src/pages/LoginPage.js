@@ -8,6 +8,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const demoEmail = process.env.REACT_APP_DEMO_EMAIL;
+  const demoPassword = process.env.REACT_APP_DEMO_PASSWORD;
+  const demoAvailable = process.env.REACT_APP_ENABLE_DEMO_CREDENTIAL_AUTOFILL === 'true' && !!demoEmail && !!demoPassword;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,13 +59,14 @@ export default function LoginPage() {
 
         <button
           type="button"
-          onClick={() => { setEmail(process.env.REACT_APP_DEMO_EMAIL || ''); setPassword(process.env.REACT_APP_DEMO_PASSWORD || ''); }}
-          disabled={!process.env.REACT_APP_DEMO_EMAIL || !process.env.REACT_APP_DEMO_PASSWORD}
-          aria-label="Auto Fill Demo Credentials"
+          onClick={() => { setEmail(demoEmail); setPassword(demoPassword); setError(null); }}
+          disabled={!demoAvailable || loading}
+          aria-label="Fill demo credentials"
           style={{ width: '100%', marginBottom: '12px', padding: '10px 14px', borderRadius: '8px', border: '1px solid currentColor', background: 'transparent', cursor: 'pointer' }}
         >
-          Auto Fill Demo Credentials
+          Fill Demo Credentials
         </button>
+        {!demoAvailable && <p className="login-sub">Demo credentials are unavailable in this session.</p>}
         <button className="btn" type="submit" disabled={loading} style={{ width: '100%' }}>
           {loading ? <><span className="spinner" />Authenticating...</> : 'Sign In'}
         </button>

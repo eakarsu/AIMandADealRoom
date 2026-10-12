@@ -12,7 +12,7 @@ export default function AIRegulatoryCheckPage() {
         { key: 'deal_summary',  label: 'Deal Summary', type: 'textarea' },
         { key: 'jurisdictions', label: 'Jurisdictions (comma-separated)', type: 'textarea' },
       ]}
-      run={(v) => aiRegulatoryApprovalCheck(v)}
+      run={(v, requestOptions) => aiRegulatoryApprovalCheck(v, requestOptions)}
     />
   );
 }

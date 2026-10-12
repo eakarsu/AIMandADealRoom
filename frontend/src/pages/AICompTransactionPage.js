@@ -14,7 +14,7 @@ export default function AICompTransactionPage() {
         { key: 'metric_preference', label: 'Preferred Multiples' },
         { key: 'notes',             label: 'Notes', type: 'textarea' },
       ]}
-      run={(v) => aiCompTransactionFinder(v)}
+      run={(v, requestOptions) => aiCompTransactionFinder(v, requestOptions)}
     />
   );
 }

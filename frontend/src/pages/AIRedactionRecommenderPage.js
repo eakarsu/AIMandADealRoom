@@ -12,7 +12,7 @@ export default function AIRedactionRecommenderPage() {
         { key: 'doc_name', label: 'Document Name', type: 'text',     placeholder: 'e.g. Top-5 exec compensation memo.pdf' },
         { key: 'body',     label: 'Document Body', type: 'textarea', placeholder: 'Paste the document text (first ~4k chars are analyzed).' },
       ]}
-      run={(v) => aiRedactionRecommender({ doc_name: v.doc_name, body: v.body })}
+      run={(v, requestOptions) => aiRedactionRecommender({ doc_name: v.doc_name, body: v.body }, requestOptions)}
     />
   );
 }

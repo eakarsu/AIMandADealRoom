@@ -12,7 +12,7 @@ export default function AIVdrQuestionRouterPage() {
         { key: 'question', label: 'Bidder Question', type: 'textarea' },
         { key: 'vdr_notes', label: 'VDR Context Notes', type: 'textarea' },
       ]}
-      run={(v) => aiVdrQuestionRouter(v)}
+      run={(v, requestOptions) => aiVdrQuestionRouter(v, requestOptions)}
     />
   );
 }

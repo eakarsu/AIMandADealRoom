@@ -12,7 +12,7 @@ export default function AINdaMatcherPage() {
         { key: 'nda_excerpt',      label: 'NDA Excerpt',      type: 'textarea', placeholder: 'Paste key clauses from the counterparty NDA.' },
         { key: 'template_excerpt', label: 'Template Excerpt', type: 'textarea', placeholder: 'Paste matching clauses from your standard template.' },
       ]}
-      run={(v) => aiNdaMatcher({ nda_excerpt: v.nda_excerpt, template_excerpt: v.template_excerpt })}
+      run={(v, requestOptions) => aiNdaMatcher({ nda_excerpt: v.nda_excerpt, template_excerpt: v.template_excerpt }, requestOptions)}
     />
   );
 }

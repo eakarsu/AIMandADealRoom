@@ -13,7 +13,7 @@ export default function AITermSheetComparePage() {
         { key: 'term_sheets_json', label: 'Term Sheets (JSON array)', type: 'textarea',
           placeholder: '[{ "bidder": "GSK", "value_usd": 1850000000, "exclusivity_days": 45, "earn_out": "None", "escrow_pct": 8 }]' },
       ]}
-      run={(v) => aiTermSheetCompare(v)}
+      run={(v, requestOptions) => aiTermSheetCompare(v, requestOptions)}
     />
   );
 }

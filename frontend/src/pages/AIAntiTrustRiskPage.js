@@ -12,7 +12,7 @@ export default function AIAntiTrustRiskPage() {
         { key: 'deal_summary',   label: 'Deal Summary',   type: 'textarea' },
         { key: 'market_context', label: 'Market Context', type: 'textarea' },
       ]}
-      run={(v) => aiAntiTrustRisk(v)}
+      run={(v, requestOptions) => aiAntiTrustRisk(v, requestOptions)}
     />
   );
 }

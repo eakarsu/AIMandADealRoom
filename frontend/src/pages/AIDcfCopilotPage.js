@@ -12,7 +12,7 @@ export default function AIDcfCopilotPage() {
         { key: 'target_summary',     label: 'Target Summary',     type: 'textarea', placeholder: 'Revenue / EBITDA / growth profile of the target.' },
         { key: 'assumptions_notes',  label: 'Assumptions',        type: 'textarea', placeholder: 'Projection horizon, WACC, exit multiple, tax rate, terminal growth.' },
       ]}
-      run={(v) => aiDcfCopilot({ target_summary: v.target_summary, assumptions_notes: v.assumptions_notes })}
+      run={(v, requestOptions) => aiDcfCopilot({ target_summary: v.target_summary, assumptions_notes: v.assumptions_notes }, requestOptions)}
     />
   );
 }

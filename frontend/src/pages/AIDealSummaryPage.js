@@ -12,7 +12,7 @@ export default function AIDealSummaryPage() {
         { key: 'deal_summary', label: 'Deal Summary', type: 'textarea', placeholder: 'High-level transaction description (buyer, target, EV, structure).' },
         { key: 'linked_notes', label: 'Linked Notes', type: 'textarea', placeholder: 'Workstream highlights, QofE, regulatory, milestones.' },
       ]}
-      run={(v) => aiDealSummaryGenerator({ deal_summary: v.deal_summary, linked_notes: v.linked_notes })}
+      run={(v, requestOptions) => aiDealSummaryGenerator({ deal_summary: v.deal_summary, linked_notes: v.linked_notes }, requestOptions)}
     />
   );
 }

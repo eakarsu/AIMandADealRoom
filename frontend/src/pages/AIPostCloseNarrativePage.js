@@ -12,7 +12,7 @@ export default function AIPostCloseNarrativePage() {
         { key: 'deal_summary', label: 'Deal Summary', type: 'textarea' },
         { key: 'kpi_notes',    label: 'KPI Notes',    type: 'textarea' },
       ]}
-      run={(v) => aiPostCloseNarrative(v)}
+      run={(v, requestOptions) => aiPostCloseNarrative(v, requestOptions)}
     />
   );
 }

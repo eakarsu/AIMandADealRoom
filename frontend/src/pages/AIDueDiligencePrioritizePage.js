@@ -11,7 +11,7 @@ export default function AIDueDiligencePrioritizePage() {
       inputs={[
         { key: 'notes', label: 'Optional Bias / Notes', type: 'textarea' },
       ]}
-      run={(v) => aiDueDiligencePrioritize({ notes: v.notes })}
+      run={(v, requestOptions) => aiDueDiligencePrioritize({ notes: v.notes }, requestOptions)}
     />
   );
 }

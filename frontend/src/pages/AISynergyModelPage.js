@@ -12,7 +12,7 @@ export default function AISynergyModelPage() {
         { key: 'deal_summary',  label: 'Deal Summary',  type: 'textarea', placeholder: 'e.g. Strategic acquires SaaS target for $1.2B.' },
         { key: 'context_notes', label: 'Context Notes', type: 'textarea', placeholder: 'Synergy levers, integration constraints, prior playbook results.' },
       ]}
-      run={(v) => aiSynergyModel({ deal_summary: v.deal_summary, context_notes: v.context_notes })}
+      run={(v, requestOptions) => aiSynergyModel({ deal_summary: v.deal_summary, context_notes: v.context_notes }, requestOptions)}
     />
   );
 }

@@ -12,7 +12,7 @@ export default function AIFinancialModelSanityPage() {
         { key: 'model_summary', label: 'Model Summary',  type: 'textarea' },
         { key: 'context',       label: 'Context Notes',  type: 'textarea' },
       ]}
-      run={(v) => aiFinancialModelSanity(v)}
+      run={(v, requestOptions) => aiFinancialModelSanity(v, requestOptions)}
     />
   );
 }

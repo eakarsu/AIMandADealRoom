@@ -12,7 +12,7 @@ export default function AIIntegrationPlanPage() {
         { key: 'deal_summary', label: 'Deal Summary', type: 'textarea' },
         { key: 'scope_notes',  label: 'Scope & Constraints', type: 'textarea' },
       ]}
-      run={(v) => aiIntegrationPlanDraft(v)}
+      run={(v, requestOptions) => aiIntegrationPlanDraft(v, requestOptions)}
     />
   );
 }

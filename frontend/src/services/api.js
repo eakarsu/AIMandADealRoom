@@ -147,32 +147,32 @@ export const login = (email, password) =>
 export const getMe = () => request('/auth/me');
 
 // AI endpoints — 16 verbs
-export const aiSynergyModel             = (b) => request('/ai/synergy-model',             { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiCompTransactionFinder    = (b) => request('/ai/comp-transaction-finder',   { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiQofeMemo                 = (b) => request('/ai/qofe-memo',                 { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiRedlineSummarizer        = (b) => request('/ai/redline-summarizer',        { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiIntegrationPlanDraft     = (b) => request('/ai/integration-plan-draft',    { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiWorkingCapitalTrueUp     = (b) => request('/ai/working-capital-true-up',   { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiExecutiveBrief           = (b) => request('/ai/executive-brief',           { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiVdrQuestionRouter        = (b) => request('/ai/vdr-question-router',       { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiRegulatoryApprovalCheck  = (b) => request('/ai/regulatory-approval-check', { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiTermSheetCompare         = (b) => request('/ai/term-sheet-compare',        { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiClosingChecklistGen      = (b) => request('/ai/closing-checklist-gen',     { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiDueDiligencePrioritize   = (b) => request('/ai/due-diligence-prioritize',  { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiFinancialModelSanity     = (b) => request('/ai/financial-model-sanity',    { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiAntiTrustRisk            = (b) => request('/ai/anti-trust-risk',           { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiEscrowCalculator         = (b) => request('/ai/escrow-calculator',         { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiPostCloseNarrative       = (b) => request('/ai/post-close-narrative',      { method: 'POST', body: JSON.stringify(b || {}) });
+export const aiSynergyModel             = (b, options = {}) => request('/ai/synergy-model',             { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiCompTransactionFinder    = (b, options = {}) => request('/ai/comp-transaction-finder',   { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiQofeMemo                 = (b, options = {}) => request('/ai/qofe-memo',                 { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiRedlineSummarizer        = (b, options = {}) => request('/ai/redline-summarizer',        { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiIntegrationPlanDraft     = (b, options = {}) => request('/ai/integration-plan-draft',    { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiWorkingCapitalTrueUp     = (b, options = {}) => request('/ai/working-capital-true-up',   { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiExecutiveBrief           = (b, options = {}) => request('/ai/executive-brief',           { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiVdrQuestionRouter        = (b, options = {}) => request('/ai/vdr-question-router',       { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiRegulatoryApprovalCheck  = (b, options = {}) => request('/ai/regulatory-approval-check', { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiTermSheetCompare         = (b, options = {}) => request('/ai/term-sheet-compare',        { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiClosingChecklistGen      = (b, options = {}) => request('/ai/closing-checklist-gen',     { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiDueDiligencePrioritize   = (b, options = {}) => request('/ai/due-diligence-prioritize',  { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiFinancialModelSanity     = (b, options = {}) => request('/ai/financial-model-sanity',    { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiAntiTrustRisk            = (b, options = {}) => request('/ai/anti-trust-risk',           { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiEscrowCalculator         = (b, options = {}) => request('/ai/escrow-calculator',         { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiPostCloseNarrative       = (b, options = {}) => request('/ai/post-close-narrative',      { ...options, method: 'POST', body: JSON.stringify(b || {}) });
 
 // Pass 7 — 8 new AI verbs
-export const aiDocumentClassifier       = (b) => request('/ai/document-classifier',       { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiQaCopilot                = (b) => request('/ai/qa-copilot',                { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiRedactionRecommender     = (b) => request('/ai/redaction-recommender',     { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiDealSummaryGenerator     = (b) => request('/ai/deal-summary-generator',    { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiRiskFlagExtractor        = (b) => request('/ai/risk-flag-extractor',       { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiNdaMatcher               = (b) => request('/ai/nda-matcher',               { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiDcfCopilot               = (b) => request('/ai/dcf-copilot',               { method: 'POST', body: JSON.stringify(b || {}) });
-export const aiTermSheetDiffExplainer   = (b) => request('/ai/term-sheet-diff-explainer', { method: 'POST', body: JSON.stringify(b || {}) });
+export const aiDocumentClassifier       = (b, options = {}) => request('/ai/document-classifier',       { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiQaCopilot                = (b, options = {}) => request('/ai/qa-copilot',                { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiRedactionRecommender     = (b, options = {}) => request('/ai/redaction-recommender',     { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiDealSummaryGenerator     = (b, options = {}) => request('/ai/deal-summary-generator',    { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiRiskFlagExtractor        = (b, options = {}) => request('/ai/risk-flag-extractor',       { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiNdaMatcher               = (b, options = {}) => request('/ai/nda-matcher',               { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiDcfCopilot               = (b, options = {}) => request('/ai/dcf-copilot',               { ...options, method: 'POST', body: JSON.stringify(b || {}) });
+export const aiTermSheetDiffExplainer   = (b, options = {}) => request('/ai/term-sheet-diff-explainer', { ...options, method: 'POST', body: JSON.stringify(b || {}) });
 
 // Pass 7 — VDR per-doc permissions (role-based ACL)
 export const vdrPermissionsApi = {

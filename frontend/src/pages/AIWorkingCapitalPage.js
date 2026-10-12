@@ -12,7 +12,7 @@ export default function AIWorkingCapitalPage() {
         { key: 'target',              label: 'Target' },
         { key: 'balance_sheet_notes', label: 'Balance Sheet & Peg', type: 'textarea' },
       ]}
-      run={(v) => aiWorkingCapitalTrueUp(v)}
+      run={(v, requestOptions) => aiWorkingCapitalTrueUp(v, requestOptions)}
     />
   );
 }

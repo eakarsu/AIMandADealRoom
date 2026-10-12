@@ -12,7 +12,7 @@ export default function AIEscrowCalculatorPage() {
         { key: 'deal_summary', label: 'Deal Summary', type: 'textarea' },
         { key: 'risk_profile', label: 'Risk Profile', type: 'textarea' },
       ]}
-      run={(v) => aiEscrowCalculator(v)}
+      run={(v, requestOptions) => aiEscrowCalculator(v, requestOptions)}
     />
   );
 }

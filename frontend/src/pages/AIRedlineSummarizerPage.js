@@ -12,7 +12,7 @@ export default function AIRedlineSummarizerPage() {
         { key: 'document', label: 'Document Title' },
         { key: 'redline',  label: 'Redline / Change List', type: 'textarea' },
       ]}
-      run={(v) => aiRedlineSummarizer(v)}
+      run={(v, requestOptions) => aiRedlineSummarizer(v, requestOptions)}
     />
   );
 }
