@@ -54,6 +54,7 @@ app.use('/api/ai', (req, res, next) => {
 
 // CRUD routes (18 M&A entities — all via _crudFactory, RBAC + bulk-import + attachments built in)
 app.use('/api/deals',                       require('./routes/deals'));
+app.use('/api/fp-wave38c', require('./routes/fp-wave38c'));
 app.use('/api/targets',                     require('./routes/targets'));
 app.use('/api/advisors',                    require('./routes/advisors'));
 app.use('/api/vdr-documents',               require('./routes/vdrDocuments'));
